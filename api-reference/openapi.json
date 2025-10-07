@@ -1,93 +1,94 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "SmartApe API",
-    "description": "API para operaciones de RAG y generación de video de SmartApe.",
+    "title": "OpenAPI Plant Store",
+    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "license": {
+      "name": "MIT"
+    },
     "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "https://api.smartape.io"
+      "url": "http://sandbox.mintlify.com"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
     }
   ],
   "paths": {
-    "/rag/upload-file": {
-      "post": {
-        "summary": "Subir archivo RAG",
-        "description": "Carga un archivo al servicio RAG para procesar información.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Archivo a subir"
-                  }
-                },
-                "required": ["file"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Archivo subido correctamente"
-          },
-          "400": {
-            "description": "Error al subir archivo"
-          }
-        }
-      }
-    },
-    "/rag/delete-file": {
-      "post": {
-        "summary": "Eliminar archivo RAG",
-        "description": "Elimina un archivo previamente cargado en el servicio RAG.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "filename": {
-                    "type": "string",
-                    "description": "Nombre del archivo a eliminar"
-                  }
-                },
-                "required": ["filename"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Archivo eliminado correctamente"
-          },
-          "400": {
-            "description": "Error al eliminar archivo"
-          }
-        }
-      }
-    },
-    "/rag/get-files": {
+    "/plants": {
       "get": {
-        "summary": "Listar archivos RAG",
-        "description": "Obtiene la lista de archivos cargados en el sistema RAG.",
+        "description": "Returns all plants from the system that the user has access to",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The maximum number of results to return",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Lista de archivos obtenida correctamente",
+            "description": "Plant response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "$ref": "#/components/schemas/Plant"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Creates a new plant in the store",
+        "requestBody": {
+          "description": "Plant to add to the store",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPlant"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "plant response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -95,98 +96,57 @@
         }
       }
     },
-    "/rag/query": {
-      "post": {
-        "summary": "Consultar información RAG",
-        "description": "Envía una consulta para buscar información dentro del sistema RAG.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "query": {
-                    "type": "string",
-                    "description": "Texto de la consulta a realizar"
-                  }
-                },
-                "required": ["query"]
-              }
+    "/plants/{id}": {
+      "delete": {
+        "description": "Deletes a single plant based on the ID supplied",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of plant to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
             }
           }
-        },
+        ],
         "responses": {
-          "200": {
-            "description": "Consulta ejecutada correctamente",
+          "204": {
+            "description": "Plant deleted",
+            "content": {}
+          },
+          "400": {
+            "description": "unexpected error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "answer": {
-                      "type": "string",
-                      "description": "Respuesta generada por el modelo"
-                    }
-                  }
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
-          },
-          "400": {
-            "description": "Error en la consulta"
           }
         }
       }
-    },
-    "/video/create": {
+    }
+  },
+  "webhooks": {
+    "/plant/webhook": {
       "post": {
-        "summary": "Crear video",
-        "description": "Genera un video basado en un script o información de entrada.",
+        "description": "Information about a new plant added to the store",
         "requestBody": {
-          "required": true,
+          "description": "Plant added to the store",
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "description": "Título del video"
-                  },
-                  "script": {
-                    "type": "string",
-                    "description": "Texto del guion o script"
-                  },
-                  "themes": {
-                    "type": "string",
-                    "description": "Temas o subtemas del video, separados por comas"
-                  }
-                },
-                "required": ["title", "script"]
+                "$ref": "#/components/schemas/NewPlant"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Video generado correctamente",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "videoUrl": {
-                      "type": "string",
-                      "description": "URL del video generado"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Error al generar video"
+            "description": "Return a 200 status to indicate that the data was received successfully"
           }
         }
       }
@@ -194,16 +154,63 @@
   },
   "components": {
     "schemas": {
+      "Plant": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "The name of the plant",
+            "type": "string"
+          },
+          "tag": {
+            "description": "Tag to specify the type",
+            "type": "string"
+          }
+        }
+      },
+      "NewPlant": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Plant"
+          },
+          {
+            "required": [
+              "id"
+            ],
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Identification number of the plant",
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          }
+        ]
+      },
       "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
         "type": "object",
         "properties": {
           "error": {
-            "type": "string"
+            "type": "integer",
+            "format": "int32"
           },
           "message": {
             "type": "string"
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   }
