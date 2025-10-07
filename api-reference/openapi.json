@@ -1,272 +1,210 @@
-openapi: 3.0.3
-info:
-  title: SmartApe
-  version: 1.0.0
-  contact: {}
-servers:
-  - url: https://dfofxhxkdkwelswhzyyp.supabase.co
-paths:
-  /functions/v1/invoke-service:
-    post:
-      tags:
-        - VIDEO
-      summary: Cargar archivo multipart
-      description: Cargar archivo multipart
-      operationId: cargarArchivoMultipart
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                api_key:
-                  type: string
-                  example: sk_GC8pUZdsTk42kHG6EhBW3ge7E8OFvSBX
-                endpoint_id:
-                  type: string
-                  example: cc14a7d9-a28b-47f8-9d1e-c2f497dd362e
-                payload:
-                  type: object
-                  properties:
-                    file_path:
-                      type: string
-                      example: viajes/filipinas-manila.md
-                service_id:
-                  type: string
-                  example: 9428c921-f57d-4a28-8dd8-14e30269cb1e
-            examples:
-              Cargar archivo application json:
-                value:
-                  api_key: sk_GC8pUZdsTk42kHG6EhBW3ge7E8OFvSBX
-                  endpoint_id: 1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5
-                  payload:
-                    file_path: viajes/BARRANCAS-ESPECTACULAR.pdf
-                    file_url: >-
-                      https://viajarlh.com/wp-content/uploads/2021/02/BARRANCAS-ESPECTACULAR.pdf
-                  service_id: 9428c921-f57d-4a28-8dd8-14e30269cb1e
-              Consultar RAG:
-                value:
-                  api_key: sk_GC8pUZdsTk42kHG6EhBW3ge7E8OFvSBX
-                  endpoint_id: d62a2014-0002-498c-9804-e44f12d75daf
-                  payload:
-                    file_path: viajes/filipinas-manila.md
-                    message: dame la info mas relevante del documento
-                  service_id: 9428c921-f57d-4a28-8dd8-14e30269cb1
-              Consultar status de carga de archivo:
-                value:
-                  api_key: sk_GC8pUZdsTk42kHG6EhBW3ge7E8OFvSBX
-                  endpoint_id: 0dfa49e2-3d2a-42cd-9445-8cf54dad9e11
-                  payload:
-                    task_id: 6f200a27-c8fc-4fd0-bedb-fa4fe7ea5152
-                  service_id: 9428c921-f57d-4a28-8dd8-14e30269cb1e
-              Eliminar archivo de RAG:
-                value:
-                  api_key: sk_GC8pUZdsTk42kHG6EhBW3ge7E8OFvSBX
-                  endpoint_id: cc14a7d9-a28b-47f8-9d1e-c2f497dd362e
-                  payload:
-                    file_path: viajes/filipinas-manila.md
-                  service_id: 9428c921-f57d-4a28-8dd8-14e30269cb1e
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                api_key:
-                  type: string
-                  example: sk_GC8pUZdsTk42kHG6EhBW3ge7E8OFvSBX
-                endpoint_id:
-                  type: string
-                  example: 1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5
-                file_path:
-                  type: string
-                  example: /viajes/filipinas-manila.pdf
-                file_upload:
-                  type: string
-                  format: binary
-                service_id:
-                  type: string
-                  example: 9428c921-f57d-4a28-8dd8-14e30269cb1e
-      responses:
-        '200':
-          description: ' / Consultar RAG'
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                example: '*'
-            CF-Cache-Status:
-              schema:
-                type: string
-                example: DYNAMIC
-            CF-Ray:
-              schema:
-                type: string
-                example: 98aff44629a920aa-QRO
-            Connection:
-              schema:
-                type: string
-                example: keep-alive
-            Content-Encoding:
-              schema:
-                type: string
-                example: gzip
-            Date:
-              schema:
-                type: string
-                example: Tue, 07 Oct 2025 19:55:11 GMT
-            Server:
-              schema:
-                type: string
-                example: cloudflare
-            Set-Cookie:
-              schema:
-                type: string
-                example: >-
-                  __cf_bm=7AoW8rEkUKRfmvOyoB2XlDc1xr5Mwm2zQyWR6mTxUNs-1759866911-1.0.1.1-I0sUjptKLB0CMfj74JXL4k9yistvGJbpzwEMDtnVpjsrObuuI8vLBNTtKE0YQqP7Uunr7O4o3TQ56U4oDUl7fNwhy4NvWMd9nvdsNRtG6J0;
-                  path=/; expires=Tue, 07-Oct-25 20:25:11 GMT;
-                  domain=.supabase.co; HttpOnly; Secure; SameSite=None
-            Strict-Transport-Security:
-              schema:
-                type: string
-                example: max-age=31536000; includeSubDomains; preload
-            Transfer-Encoding:
-              schema:
-                type: string
-                example: chunked
-            Vary:
-              schema:
-                type: string
-                example: Accept-Encoding
-            access-control-allow-headers:
-              schema:
-                type: string
-                example: Content-Type, Authorization, X-Client-Info, apikey
-            access-control-allow-methods:
-              schema:
-                type: string
-                example: POST, OPTIONS
-            alt-svc:
-              schema:
-                type: string
-                example: h3=":443"; ma=86400
-            sb-project-ref:
-              schema:
-                type: string
-                example: dfofxhxkdkwelswhzyyp
-            sb-request-id:
-              schema:
-                type: string
-                example: 0199c03d-e7ea-7794-a96c-d6ab41365567
-            x-deno-execution-id:
-              schema:
-                type: string
-                example: 0d74f075-f2c8-43e7-900f-d166805ede2e
-            x-sb-edge-region:
-              schema:
-                type: string
-                example: us-east-1
-            x-served-by:
-              schema:
-                type: string
-                example: supabase-edge-runtime
-          content: {}
-        '404':
-          description: Consultar RAG
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                example: '*'
-            CF-Cache-Status:
-              schema:
-                type: string
-                example: DYNAMIC
-            CF-Ray:
-              schema:
-                type: string
-                example: 98affc47de6a38ef-QRO
-            Connection:
-              schema:
-                type: string
-                example: keep-alive
-            Content-Encoding:
-              schema:
-                type: string
-                example: gzip
-            Content-Length:
-              schema:
-                type: string
-                example: '49'
-            Date:
-              schema:
-                type: string
-                example: Tue, 07 Oct 2025 20:00:35 GMT
-            Server:
-              schema:
-                type: string
-                example: cloudflare
-            Set-Cookie:
-              schema:
-                type: string
-                example: >-
-                  __cf_bm=Bn1m0nFWAMVuAdS.8zabYOxHRyMzLUd.M7biwH9HEMk-1759867235-1.0.1.1-NT2fhe2g3rpnUhB_AFROe0WTyHocG.CMJsX_S1ORAhOvrisiThzL7Aav4YHkImLqkOF6DX.0GV9LWW8_CGkmgCvcJpd35dikFqwCWwJrHI0;
-                  path=/; expires=Tue, 07-Oct-25 20:30:35 GMT;
-                  domain=.supabase.co; HttpOnly; Secure; SameSite=None
-            Strict-Transport-Security:
-              schema:
-                type: string
-                example: max-age=31536000; includeSubDomains; preload
-            Vary:
-              schema:
-                type: string
-                example: Accept-Encoding
-            access-control-allow-headers:
-              schema:
-                type: string
-                example: Content-Type, Authorization, X-Client-Info, apikey
-            access-control-allow-methods:
-              schema:
-                type: string
-                example: POST, OPTIONS
-            alt-svc:
-              schema:
-                type: string
-                example: h3=":443"; ma=86400
-            sb-project-ref:
-              schema:
-                type: string
-                example: dfofxhxkdkwelswhzyyp
-            sb-request-id:
-              schema:
-                type: string
-                example: 0199c042-e8f0-7bff-80f7-3db07c34a8e4
-            x-deno-execution-id:
-              schema:
-                type: string
-                example: 3e74a222-1811-4d7a-8905-1b8283498561
-            x-sb-edge-region:
-              schema:
-                type: string
-                example: us-east-1
-            x-served-by:
-              schema:
-                type: string
-                example: supabase-edge-runtime
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Service not found
-              examples:
-                Consultar RAG:
-                  value:
-                    error: Service not found
-      security:
-        - {}
-components:
-  securitySchemes: {}
-tags:
-  - name: RAG
-  - name: VIDEO
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SmartApe API",
+    "description": "API para operaciones de RAG y generación de video de SmartApe.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.smartape.io"
+    }
+  ],
+  "paths": {
+    "/rag/upload-file": {
+      "post": {
+        "summary": "Subir archivo RAG",
+        "description": "Carga un archivo al servicio RAG para procesar información.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Archivo a subir"
+                  }
+                },
+                "required": ["file"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Archivo subido correctamente"
+          },
+          "400": {
+            "description": "Error al subir archivo"
+          }
+        }
+      }
+    },
+    "/rag/delete-file": {
+      "post": {
+        "summary": "Eliminar archivo RAG",
+        "description": "Elimina un archivo previamente cargado en el servicio RAG.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "string",
+                    "description": "Nombre del archivo a eliminar"
+                  }
+                },
+                "required": ["filename"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Archivo eliminado correctamente"
+          },
+          "400": {
+            "description": "Error al eliminar archivo"
+          }
+        }
+      }
+    },
+    "/rag/get-files": {
+      "get": {
+        "summary": "Listar archivos RAG",
+        "description": "Obtiene la lista de archivos cargados en el sistema RAG.",
+        "responses": {
+          "200": {
+            "description": "Lista de archivos obtenida correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rag/query": {
+      "post": {
+        "summary": "Consultar información RAG",
+        "description": "Envía una consulta para buscar información dentro del sistema RAG.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Texto de la consulta a realizar"
+                  }
+                },
+                "required": ["query"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Consulta ejecutada correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "answer": {
+                      "type": "string",
+                      "description": "Respuesta generada por el modelo"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en la consulta"
+          }
+        }
+      }
+    },
+    "/video/create": {
+      "post": {
+        "summary": "Crear video",
+        "description": "Genera un video basado en un script o información de entrada.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Título del video"
+                  },
+                  "script": {
+                    "type": "string",
+                    "description": "Texto del guion o script"
+                  },
+                  "themes": {
+                    "type": "string",
+                    "description": "Temas o subtemas del video, separados por comas"
+                  }
+                },
+                "required": ["title", "script"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Video generado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "videoUrl": {
+                      "type": "string",
+                      "description": "URL del video generado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error al generar video"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
