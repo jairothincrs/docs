@@ -1,0 +1,61 @@
+openapi: 3.0.0
+info:
+  title: SmartApe
+  version: 1.0.0
+servers:
+  - url: https://dfofxhxkdkwelswhzyyp.supabase.co
+components:
+  securitySchemes:
+    noauthAuth:
+      type: http
+      scheme: noauth
+tags:
+  - name: RAG
+  - name: VIDEO
+paths:
+  /functions/v1/invoke-service:
+    post:
+      tags:
+        - VIDEO
+      summary: status
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                api_key:
+                  type: string
+                  example: sk_GC8pUZdsTk42kHG6EhBW3ge7E8OFvSBX
+                service_id:
+                  type: string
+                  example: 9428c921-f57d-4a28-8dd8-14e30269cb1e
+                endpoint_id:
+                  type: string
+                  example: 1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5
+                file_path:
+                  type: string
+                  example: /viajes/filipinas-manila.pdf
+                file_upload:
+                  type: string
+                  format: binary
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmb2Z4aHhrZGt3ZWxzd2h6eXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNDc0MDksImV4cCI6MjA2OTkyMzQwOX0.qMj6QZ7rBhDaBCmlGnXD9OiFWgHIgi9JkTND3SZHKbk
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: multipart/form-data
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
