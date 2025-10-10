@@ -19,9 +19,52 @@
     }
   ],
   "paths": {
+    "/invoke-service": {
+      "post": {
+        "description": "Aqui informacion sobre como funciona el servicio",
+        "requestBody": {
+          "description": "Ejecuta endpoint de servicio",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmartApeJson"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SmartApeFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "SmartApe response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/plants": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
+        "description": "Returns all plantsadad from the system that the user has access to",
         "parameters": [
           {
             "name": "limit",
@@ -185,6 +228,86 @@
                 "description": "Identification number of the plant",
                 "type": "integer",
                 "format": "int64"
+              }
+            }
+          }
+        ]
+      },
+      "SmartApeJson": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Plant"
+          },
+          {
+            "required": [
+              "api_key",
+              "service_id",
+              "endpoint_id",
+              "payload"
+            ],
+            "type": "object",
+            "properties": {
+              "api_key": {
+                "description": "API key generado por el usuario con acceso al servicio a ejecutar",
+                "type": "string"
+              },
+              "service_id": {
+                "description": "ID del servicio a ejecutar",
+                "type": "string"
+              },
+              "endpoint_id": {
+                "description": "ID del endpoint del servicio",
+                "type": "string"
+              },
+              "payload": {
+                "description": "Carga útil del endpoint a ejecutar (objeto JSON con los parámetros requeridos)",
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        ]
+      },
+      "SmartApeFile": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Plant"
+          },
+          {
+            "required": [
+              "api_key",
+              "service_id",
+              "endpoint_id",
+              "attribute1",
+              "attribute2",
+              "attributeN"
+            ],
+            "type": "object",
+            "properties": {
+              "api_key": {
+                "description": "API key generado por el usuario con acceso al servicio a ejecutar",
+                "type": "string"
+              },
+              "service_id": {
+                "description": "ID del servicio a ejecutar",
+                "type": "string"
+              },
+              "endpoint_id": {
+                "description": "ID del endpoint del servicio",
+                "type": "string"
+              },
+              "attribute1": {
+                "description": "Archivo a subir",
+                "type": "string",
+                "format": "binary"
+              },
+              "attribute2": {
+                "description": "Atributo adicional 2",
+                "type": "string"
+              },
+              "attributeN": {
+                "description": "Atributo adicional N",
+                "type": "string"
               }
             }
           }
