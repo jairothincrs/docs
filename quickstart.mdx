@@ -1,80 +1,193 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: "Inicio Rápido"
+description: "Comienza a usar SmartApe en menos de 5 minutos. Aprende cómo integrar servicios de IA en tu aplicación con nuestra API unificada."
 ---
 
-## Get started in three steps
+## Cómo funciona
 
-Get your documentation site running locally and make your first customization.
+SmartApe simplifica el proceso de integración de servicios de IA en tu aplicación:
 
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
+<Steps>
+  <Step title="Regístrate y obtén tu API Key">
+    Crea tu cuenta en el dashboard de SmartApe y obtén tus credenciales de acceso.
     
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
+    <Card title="Accede al Dashboard" icon="arrow-right" href="https://dashboard.smartape.com">
+      Regístrate ahora y obtén tu API Key gratis
+    </Card>
     
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+    <Check>
+    Tu API Key te da acceso instantáneo a todos los servicios disponibles.
+    </Check>
+  </Step>
 
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
+  <Step title="Elige el servicio que necesitas">
+    Explora nuestro catálogo de servicios de IA y selecciona el que mejor se adapte a tus necesidades.
     
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+    <Tabs>
+      <Tab title="RAG">
+        **Retrieval Augmented Generation** - Sistemas de búsqueda y generación de contenido basados en documentos.
+        
+        - Chatbots inteligentes
+        - Asistentes virtuales
+        - Sistemas de Q&A empresariales
+      </Tab>
+      
+      <Tab title="OCR">
+        **Reconocimiento Óptico de Caracteres** - Extracción de texto e información de imágenes.
+        
+        - Digitalización de documentos
+        - Procesamiento de formularios
+        - Automatización documental
+      </Tab>
+      
+      <Tab title="Video">
+        **Procesamiento de Video** - Análisis y extracción de información de contenido audiovisual.
+        
+        - Análisis de contenido multimedia
+        - Transcripción automática
+        - Generación de resúmenes
+      </Tab>
+    </Tabs>
+    
+    <Tip>
+    Puedes usar múltiples servicios en la misma aplicación sin configuraciones adicionales.
+    </Tip>
+  </Step>
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+  <Step title="Integra con una sola API">
+    Realiza llamadas a nuestra API unificada con tu API Key y comienza a usar los servicios inmediatamente.
+    
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST 'https://api.smartape.com/v1/service/invoke' \
+      -H 'Authorization: Bearer YOUR_API_KEY' \
+      -H 'Content-Type: application/json' \
+      -d '{
+        "service": "rag",
+        "action": "query",
+        "data": {
+          "question": "¿Cuál es el horario de atención?",
+          "collection": "my_documents"
+        }
+      }'
+    ```
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+    ```javascript Node.js
+    const response = await fetch('https://api.smartape.com/v1/service/invoke', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.SMARTAPE_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        service: 'rag',
+        action: 'query',
+        data: {
+          question: '¿Cuál es el horario de atención?',
+          collection: 'my_documents'
+        }
+      })
+    });
 
-### Step 3: Go live
+    const result = await response.json();
+    console.log(result);
+    ```
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+    ```python Python
+    import os
+    import requests
 
-## Next steps
+    response = requests.post(
+        'https://api.smartape.com/v1/service/invoke',
+        headers={
+            'Authorization': f'Bearer {os.getenv("SMARTAPE_API_KEY")}',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'service': 'rag',
+            'action': 'query',
+            'data': {
+                'question': '¿Cuál es el horario de atención?',
+                'collection': 'my_documents'
+            }
+        }
+    )
 
-Now that you have your docs running, explore these key features:
+    result = response.json()
+    print(result)
+    ```
 
-<CardGroup cols={2}>
+    ```php PHP
+    <?php
+    $apiKey = getenv('SMARTAPE_API_KEY');
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
+    $ch = curl_init('https://api.smartape.com/v1/service/invoke');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $apiKey,
+        'Content-Type: application/json'
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+        'service' => 'rag',
+        'action' => 'query',
+        'data' => [
+            'question' => '¿Cuál es el horario de atención?',
+            'collection' => 'my_documents'
+        ]
+    ]));
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
+    $response = curl_exec($ch);
+    $result = json_decode($response, true);
+    print_r($result);
+    ?>
+    ```
+    </CodeGroup>
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
+    <Warning>
+    Nunca compartas tu API Key públicamente. Usa variables de entorno para almacenar tus credenciales de forma segura.
+    </Warning>
+  </Step>
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
+  <Step title="Integra múltiples servicios fácilmente">
+    Una de las mayores ventajas de SmartApe es que todos los servicios comparten la misma estructura de integración.
+    
+    <Info>
+    Una vez que hayas integrado un servicio, agregar servicios adicionales es prácticamente instantáneo.
+    </Info>
+    
+    <AccordionGroup>
+      <Accordion title="Estructura de API unificada" icon="code">
+        Todos los servicios utilizan el mismo endpoint y formato de solicitud. Solo cambia el parámetro `service` para acceder a funcionalidades completamente diferentes.
+        
+        ```javascript
+        // Servicio RAG
+        { service: 'rag', action: 'query', data: {...} }
+        
+        // Servicio OCR  
+        { service: 'ocr', action: 'extract', data: {...} }
+        
+        // Servicio de Video
+        { service: 'video', action: 'analyze', data: {...} }
+        ```
+      </Accordion>
+      
+      <Accordion title="Misma autenticación para todo" icon="key">
+        Una sola API Key te da acceso a todos los servicios disponibles. No necesitas gestionar múltiples credenciales, tokens o métodos de autenticación diferentes.
+      </Accordion>
+      
+      <Accordion title="Patrones de uso consistentes" icon="arrows-rotate">
+        Los patrones de manejo de errores, paginación, filtrado y otras operaciones son idénticos entre servicios, lo que reduce drásticamente la curva de aprendizaje.
+      </Accordion>
 
-</CardGroup>
+      <Accordion title="Ampliación sin refactorización" icon="puzzle-piece">
+        Agregar nuevos servicios a tu aplicación no requiere refactorizar tu código existente. Simplemente reutiliza tu lógica de integración actual y cambia los parámetros según el servicio que necesites.
+      </Accordion>
+    </AccordionGroup>
+    
+    <Check>
+    Aprende una vez, úsalo siempre. La consistencia en la integración te permite expandir las capacidades de IA de tu aplicación en minutos, no en semanas.
+    </Check>
+  </Step>
+</Steps>
 
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>
