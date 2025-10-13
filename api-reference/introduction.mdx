@@ -1,33 +1,320 @@
 ---
-title: 'Introduction'
-description: 'Introducción de API SmartApe'
+title: "Introducción a la API de SmartApe"
+description: "Aprende cómo acceder a todos los servicios de IA de SmartApe mediante una API unificada y centralizada"
 ---
 
+## Una API, múltiples servicios
+
+Todos los servicios de SmartApe son accesibles mediante **una única API centralizada**. Esto significa que con una sola integración puedes acceder a RAG, OCR, procesamiento de video y todos los demás servicios disponibles.
+
+<CardGroup cols={2}>
+  <Card title="Endpoint unificado" icon="link">
+    Un solo endpoint para todos los servicios de IA
+  </Card>
+  <Card title="Cambio dinámico" icon="arrows-rotate">
+    Cambia entre servicios modificando solo los IDs
+  </Card>
+  <Card title="Gestión simple" icon="key">
+    Control centralizado mediante API keys
+  </Card>
+  <Card title="Consistencia" icon="check-double">
+    Misma estructura para todas las peticiones
+  </Card>
+</CardGroup>
+
+## Endpoint base
+
+Todas las peticiones a servicios de SmartApe se realizan a través del siguiente endpoint:
+
+```bash
+POST https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service
+```
+
+<Info>
+Este único endpoint te permite invocar cualquier servicio disponible en SmartApe simplemente cambiando los identificadores de servicio y endpoint.
+</Info>
+
+## Autenticación
+
+Todas las peticiones son controladas mediante **API Keys**. Asegúrate de incluir tu API key en cada solicitud para autenticar tu acceso.
+
+<Warning>
+Mantén tu API key segura y nunca la expongas en código del lado del cliente. Usa variables de entorno para almacenarla de forma segura.
+</Warning>
+
+## Parámetros requeridos
+
+Cada petición a SmartApe debe incluir los siguientes parámetros obligatorios:
+
+<ParamField body="api_key" type="string" required>
+  Tu clave de API única para autenticación. Obtenla desde el [Dashboard de SmartApe](https://dashboard.smartape.com).
+</ParamField>
+
+<ParamField body="service_id" type="string" required>
+  Identificador único del servicio que deseas utilizar (RAG, OCR, Video, etc.).
+</ParamField>
+
+<ParamField body="endpoint_id" type="string" required>
+  Identificador del endpoint específico dentro del servicio seleccionado.
+</ParamField>
+
 <Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
+Los demás parámetros variarán dependiendo del servicio específico que estés invocando. Consulta la documentación de cada servicio para conocer sus parámetros adicionales.
 </Note>
 
-## Welcome
+## Tipos de peticiones
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+SmartApe soporta dos tipos de peticiones según el contenido que necesites enviar:
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+<Tabs>
+  <Tab title="Peticiones JSON">
+    ### Peticiones con datos JSON
+    
+    Utiliza este formato cuando necesites enviar datos estructurados sin archivos.
 
-## Authentication
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://api.smartape.ai/v1/badec03b-494e-4219-a028-86fe4324b495" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "api_key": "sk_Gv1IQ88DgqUOlZApEivcaedXGCbB2epC",
+      "service_id": "482111e2-6a27-42db-8420-43ade50759cc",
+      "endpoint_id": "a50d8158-67e4-4ee7-b18f-6bcba0cc8068",
+      "payload": {
+        "atributo1": "value",
+        "atributo2": "value"
+      }
+    }'
+    ```
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+    ```javascript JavaScript
+    const response = await fetch('https://api.smartape.ai/v1/badec03b-494e-4219-a028-86fe4324b495', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        api_key: 'sk_Gv1IQ88DgqUOlZApEivcaedXGCbB2epC',
+        service_id: '482111e2-6a27-42db-8420-43ade50759cc',
+        endpoint_id: 'a50d8158-67e4-4ee7-b18f-6bcba0cc8068',
+        payload: {
+          atributo1: 'value',
+          atributo2: 'value'
+        }
+      })
+    });
 
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+    const data = await response.json();
+    ```
+
+    ```python Python
+    import requests
+    import json
+
+    url = "https://api.smartape.ai/v1/badec03b-494e-4219-a028-86fe4324b495"
+    
+    payload = {
+        "api_key": "sk_Gv1IQ88DgqUOlZApEivcaedXGCbB2epC",
+        "service_id": "482111e2-6a27-42db-8420-43ade50759cc",
+        "endpoint_id": "a50d8158-67e4-4ee7-b18f-6bcba0cc8068",
+        "payload": {
+            "atributo1": "value",
+            "atributo2": "value"
+        }
+    }
+
+    response = requests.post(url, json=payload)
+    data = response.json()
+    ```
+    </CodeGroup>
+
+    <Check>
+    Utiliza el formato JSON cuando trabajes con texto, consultas, configuraciones o cualquier dato estructurado que no requiera archivos.
+    </Check>
+  </Tab>
+
+  <Tab title="Peticiones con archivos">
+    ### Peticiones con archivos (multipart/form-data)
+    
+    Utiliza este formato cuando necesites enviar archivos como imágenes, PDFs, videos u otros documentos.
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://api.smartape.ai/v1/badec03b-494e-4219-a028-86fe4324b495" \
+    -F "api_key=sk_Gv1IQ88DgqUOlZApEivcaedXGCbB2epC" \
+    -F "service_id=482111e2-6a27-42db-8420-43ade50759cc" \
+    -F "endpoint_id=a50d8158-67e4-4ee7-b18f-6bcba0cc8068" \
+    -F "atributo1=value" \
+    -F "atributo2=value" \
+    -F "file=@documento.pdf"
+    ```
+
+    ```javascript JavaScript
+    const formData = new FormData();
+    formData.append('api_key', 'sk_Gv1IQ88DgqUOlZApEivcaedXGCbB2epC');
+    formData.append('service_id', '482111e2-6a27-42db-8420-43ade50759cc');
+    formData.append('endpoint_id', 'a50d8158-67e4-4ee7-b18f-6bcba0cc8068');
+    formData.append('atributo1', 'value');
+    formData.append('atributo2', 'value');
+    formData.append('file', fileInput.files[0]);
+
+    const response = await fetch('https://api.smartape.ai/v1/badec03b-494e-4219-a028-86fe4324b495', {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+    ```
+
+    ```python Python
+    import requests
+
+    url = "https://api.smartape.ai/v1/badec03b-494e-4219-a028-86fe4324b495"
+    
+    files = {
+        'api_key': (None, 'sk_Gv1IQ88DgqUOlZApEivcaedXGCbB2epC'),
+        'service_id': (None, '482111e2-6a27-42db-8420-43ade50759cc'),
+        'endpoint_id': (None, 'a50d8158-67e4-4ee7-b18f-6bcba0cc8068'),
+        'atributo1': (None, 'value'),
+        'atributo2': (None, 'value'),
+        'file': ('documento.pdf', open('documento.pdf', 'rb'), 'application/pdf')
+    }
+
+    response = requests.post(url, files=files)
+    data = response.json()
+    ```
+    </CodeGroup>
+
+    <Check>
+    Utiliza el formato multipart cuando trabajes con OCR, procesamiento de imágenes, análisis de video o cualquier servicio que requiera archivos.
+    </Check>
+  </Tab>
+</Tabs>
+
+## Cómo cambiar entre servicios
+
+La arquitectura unificada de SmartApe te permite cambiar entre diferentes servicios simplemente modificando los identificadores:
+
+<Steps>
+  <Step title="Mantén la estructura base">
+    La estructura de tu petición permanece igual sin importar el servicio.
+    
+    <Info>
+    No necesitas reescribir tu código de integración para cada servicio.
+    </Info>
+  </Step>
+
+  <Step title="Cambia los identificadores">
+    Simplemente actualiza `service_id` y `endpoint_id` según el servicio que necesites:
+    
+    ```javascript
+    // Servicio RAG
+    {
+      service_id: "482111e2-6a27-42db-8420-43ade50759cc",
+      endpoint_id: "a50d8158-67e4-4ee7-b18f-6bcba0cc8068"
+    }
+
+    // Servicio OCR
+    {
+      service_id: "OCR_SERVICE_ID",
+      endpoint_id: "OCR_ENDPOINT_ID"
+    }
+
+    // Servicio Video
+    {
+      service_id: "VIDEO_SERVICE_ID",
+      endpoint_id: "VIDEO_ENDPOINT_ID"
+    }
+    ```
+  </Step>
+
+  <Step title="Ajusta los parámetros específicos">
+    Cada servicio puede requerir parámetros adicionales diferentes en el `payload`.
+    
+    <Tip>
+    Consulta la documentación específica de cada servicio para conocer sus parámetros únicos.
+    </Tip>
+  </Step>
+</Steps>
+
+## Ventajas de la API unificada
+
+<AccordionGroup>
+  <Accordion title="Integración única y reutilizable">
+    Escribe el código de integración una sola vez y reutilízalo para todos los servicios. Solo necesitas cambiar los identificadores según el servicio que necesites invocar.
+  </Accordion>
+
+  <Accordion title="Mantenimiento simplificado">
+    Al tener una única API, cualquier actualización o mejora se refleja automáticamente en todos los servicios sin necesidad de modificar múltiples integraciones.
+  </Accordion>
+
+  <Accordion title="Curva de aprendizaje reducida">
+    Una vez que aprendes a usar un servicio de SmartApe, ya sabes cómo usar todos los demás. La consistencia facilita la adopción y reduce errores.
+  </Accordion>
+
+  <Accordion title="Escalabilidad sin fricciones">
+    Añade nuevos servicios a tu aplicación sin complejidad adicional. Si SmartApe lanza un nuevo servicio, puedes integrarlo inmediatamente con tu código existente.
+  </Accordion>
+</AccordionGroup>
+
+## Ejemplo práctico
+
+Imagina que necesitas usar tanto RAG como OCR en tu aplicación. Con SmartApe, usas el mismo código base:
+
+```javascript
+const callSmartApeService = async (serviceId, endpointId, payload) => {
+  const response = await fetch('https://api.smartape.ai/v1/badec03b-494e-4219-a028-86fe4324b495', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      api_key: process.env.SMARTAPE_API_KEY,
+      service_id: serviceId,
+      endpoint_id: endpointId,
+      payload: payload
+    })
+  });
+  
+  return await response.json();
+};
+
+// Llamada a servicio RAG
+const ragResult = await callSmartApeService(
+  'RAG_SERVICE_ID',
+  'RAG_ENDPOINT_ID',
+  { query: '¿Qué es SmartApe?' }
+);
+
+// Llamada a servicio OCR (misma función, diferentes IDs)
+const ocrResult = await callSmartApeService(
+  'OCR_SERVICE_ID',
+  'OCR_ENDPOINT_ID',
+  { document_url: 'https://example.com/document.pdf' }
+);
 ```
+
+<Tip>
+Crea funciones auxiliares reutilizables como la del ejemplo para simplificar aún más tus llamadas a la API de SmartApe.
+</Tip>
+
+## Próximos pasos
+
+<CardGroup cols={2}>
+  <Card title="Servicio RAG" icon="brain" href="/api-reference/endpoint/invoke-service">
+    Explora la documentación del servicio RAG
+  </Card>
+  <Card title="Servicio OCR" icon="file-lines" href="/api-reference/endpoint/invoke-service">
+    Aprende a usar el servicio de OCR
+  </Card>
+  <Card title="Servicio Video" icon="video" href="/api-reference/endpoint/invoke-service">
+    Descubre el procesamiento de video
+  </Card>
+  <Card title="Obtener API Key" icon="key" href="https://dashboard.smartape.com">
+    Consigue tu API key en el dashboard
+  </Card>
+</CardGroup>
+
+<Warning>
+Recuerda que las API keys son sensibles y deben protegerse adecuadamente. Nunca las incluyas directamente en tu código del lado del cliente ni las compartas públicamente.
+</Warning>
