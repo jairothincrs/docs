@@ -22,27 +22,9 @@
             ]
           },
           {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
             "group": "AI tools",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "ai-tools/cursor"
             ]
           }
         ]
@@ -57,13 +39,21 @@
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "RAG",
             "pages": [
-              "api-reference/endpoint/invoke-service",
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/endpoint/invoke-service"
+            ]
+          },
+          {
+            "group": "OCR",
+            "pages": [
+              "api-reference/endpoint/invoke-service"
+            ]
+          },
+          {
+            "group": "Video",
+            "pages": [
+              "api-reference/endpoint/invoke-service"
             ]
           }
         ]
@@ -72,12 +62,12 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
+          "anchor": "Dashboard SmartApe",
           "href": "https://mintlify.com/docs",
           "icon": "book-open-cover"
         },
         {
-          "anchor": "Blog",
+          "anchor": "Soporte",
           "href": "https://mintlify.com/blog",
           "icon": "newspaper"
         }
