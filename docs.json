@@ -38,21 +38,17 @@
             ]
           },
           {
-            "group": "RAG",
+            "group": "SmartApe",
             "pages": [
               "api-reference/endpoint/invoke-service"
             ]
           },
           {
-            "group": "OCR",
+            "group": "Ejemplos",
             "pages": [
-              "api-reference/endpoint/invoke-service"
-            ]
-          },
-          {
-            "group": "Video",
-            "pages": [
-              "api-reference/endpoint/invoke-service"
+              "api-reference/rag",
+              "api-reference/ocr",
+              "api-reference/video"
             ]
           }
         ]
