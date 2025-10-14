@@ -1,6 +1,396 @@
 ---
-title: "VIDEO"
-description: "Descripcion VIDEO ejemplos"
+title: "Servicio de Video"
+description: "Genera, consulta estado y descarga videos utilizando el servicio de Video de SmartApe"
 ---
 
-Aqui ejemplos de peticiones a VIDEO
+## Crear Video
+
+Genera un nuevo video a partir de un archivo JSON. Este endpoint inicia el proceso de creación y retorna un `job_id` para hacer seguimiento.
+
+<ParamField body="endpoint_id" type="string" required>
+  ID del endpoint: `f90e729e-97cb-4b43-9b33-676956665589`
+</ParamField>
+
+<ParamField body="json_file" type="file" required>
+  Archivo JSON que contiene la configuración del video a generar
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  Correo electrónico donde se notificará cuando el video esté listo
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-F "api_key=sk_test_1234567890abcdefghijklmnopqrstuvwxyz" \
+-F "service_id=badec03b-494e-4219-a028-86fe4324b495" \
+-F "endpoint_id=f90e729e-97cb-4b43-9b33-676956665589" \
+-F "email=usuario@ejemplo.com" \
+-F "json_file=@configuracion-video.json"
+```
+
+```javascript Node.js
+const FormData = require('form-data');
+const fs = require('fs');
+const axios = require('axios');
+
+const createVideo = async () => {
+  const form = new FormData();
+  form.append('api_key', 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz');
+  form.append('service_id', 'badec03b-494e-4219-a028-86fe4324b495');
+  form.append('endpoint_id', 'f90e729e-97cb-4b43-9b33-676956665589');
+  form.append('email', 'usuario@ejemplo.com');
+  form.append('json_file', fs.createReadStream('configuracion-video.json'));
+
+  const response = await axios.post(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    form,
+    { headers: form.getHeaders() }
+  );
+
+  return response.data;
+};
+```
+
+```python Python
+import requests
+
+def create_video():
+    url = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+    
+    data = {
+        'api_key': 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+        'service_id': 'badec03b-494e-4219-a028-86fe4324b495',
+        'endpoint_id': 'f90e729e-97cb-4b43-9b33-676956665589',
+        'email': 'usuario@ejemplo.com'
+    }
+    
+    files = {
+        'json_file': open('configuracion-video.json', 'rb')
+    }
+    
+    response = requests.post(url, data=data, files=files)
+    return response.json()
+```
+</RequestExample>
+
+<ResponseExample>
+```json Success
+{
+  "status": "success",
+  "data": {
+    "job_id": "vid_abc123def456",
+    "message": "Video en proceso de creación",
+    "email": "usuario@ejemplo.com",
+    "created_at": "2025-10-14T10:30:00Z"
+  }
+}
+```
+
+```json Error
+{
+  "status": "error",
+  "message": "El archivo JSON es requerido"
+}
+```
+</ResponseExample>
+
+<Tip>
+Guarda el `job_id` retornado para consultar el estado del video y descargarlo cuando esté listo.
+</Tip>
+
+---
+
+## Consultar Estado del Video
+
+Consulta el estado de procesamiento de un video utilizando su `job_id`.
+
+<ParamField body="endpoint_id" type="string" required>
+  ID del endpoint: `c5ae540f-c7ef-455a-bb30-c0207a0ce2af`
+</ParamField>
+
+<ParamField body="job_id" type="string" required>
+  ID del trabajo de video retornado al crear el video
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-H "Content-Type: application/json" \
+-d '{
+  "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+  "service_id": "badec03b-494e-4219-a028-86fe4324b495",
+  "endpoint_id": "c5ae540f-c7ef-455a-bb30-c0207a0ce2af",
+  "payload": {
+    "job_id": "vid_abc123def456"
+  }
+}'
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const checkVideoStatus = async (jobId) => {
+  const response = await axios.post(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    {
+      api_key: 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+      service_id: 'badec03b-494e-4219-a028-86fe4324b495',
+      endpoint_id: 'c5ae540f-c7ef-455a-bb30-c0207a0ce2af',
+      payload: {
+        job_id: jobId
+      }
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  return response.data;
+};
+```
+
+```python Python
+import requests
+import json
+
+def check_video_status(job_id):
+    url = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+    
+    payload = {
+        'api_key': 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+        'service_id': 'badec03b-494e-4219-a028-86fe4324b495',
+        'endpoint_id': 'c5ae540f-c7ef-455a-bb30-c0207a0ce2af',
+        'payload': {
+            'job_id': job_id
+        }
+    }
+    
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(payload), headers=headers)
+    return response.json()
+```
+</RequestExample>
+
+<ResponseExample>
+```json Processing
+{
+  "status": "success",
+  "data": {
+    "job_id": "vid_abc123def456",
+    "status": "processing",
+    "progress": 45,
+    "message": "El video se está procesando",
+    "estimated_completion": "2025-10-14T11:00:00Z"
+  }
+}
+```
+
+```json Completed
+{
+  "status": "success",
+  "data": {
+    "job_id": "vid_abc123def456",
+    "status": "completed",
+    "progress": 100,
+    "message": "Video generado exitosamente",
+    "video_url": "https://storage.smartape.ai/videos/vid_abc123def456.mp4",
+    "completed_at": "2025-10-14T10:45:00Z"
+  }
+}
+```
+
+```json Failed
+{
+  "status": "success",
+  "data": {
+    "job_id": "vid_abc123def456",
+    "status": "failed",
+    "message": "Error al procesar el video",
+    "error": "Formato de JSON inválido"
+  }
+}
+```
+</ResponseExample>
+
+<Info>
+Los estados posibles son: `pending`, `processing`, `completed` y `failed`. Consulta periódicamente hasta que el estado sea `completed`.
+</Info>
+
+---
+
+## Descargar Video
+
+Obtiene la URL de descarga de un video completado.
+
+<ParamField body="endpoint_id" type="string" required>
+  ID del endpoint: `2ac3d285-c2dd-4a19-a4c8-17617f90196b`
+</ParamField>
+
+<ParamField body="job_id" type="string" required>
+  ID del trabajo de video que deseas descargar
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-H "Content-Type: application/json" \
+-d '{
+  "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+  "service_id": "badec03b-494e-4219-a028-86fe4324b495",
+  "endpoint_id": "2ac3d285-c2dd-4a19-a4c8-17617f90196b",
+  "payload": {
+    "job_id": "vid_abc123def456"
+  }
+}'
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const downloadVideo = async (jobId) => {
+  const response = await axios.post(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    {
+      api_key: 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+      service_id: 'badec03b-494e-4219-a028-86fe4324b495',
+      endpoint_id: '2ac3d285-c2dd-4a19-a4c8-17617f90196b',
+      payload: {
+        job_id: jobId
+      }
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  return response.data;
+};
+```
+
+```python Python
+import requests
+import json
+
+def download_video(job_id):
+    url = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+    
+    payload = {
+        'api_key': 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+        'service_id': 'badec03b-494e-4219-a028-86fe4324b495',
+        'endpoint_id': '2ac3d285-c2dd-4a19-a4c8-17617f90196b',
+        'payload': {
+            'job_id': job_id
+        }
+    }
+    
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(payload), headers=headers)
+    return response.json()
+```
+</RequestExample>
+
+<ResponseExample>
+```json Success
+{
+  "status": "success",
+  "data": {
+    "job_id": "vid_abc123def456",
+    "download_url": "https://storage.smartape.ai/videos/vid_abc123def456.mp4",
+    "file_size": "15.7 MB",
+    "duration": "00:02:35",
+    "format": "mp4",
+    "expires_at": "2025-10-21T10:45:00Z"
+  }
+}
+```
+
+```json Error - Not Ready
+{
+  "status": "error",
+  "message": "El video aún no está listo para descargar. Estado actual: processing"
+}
+```
+
+```json Error - Not Found
+{
+  "status": "error",
+  "message": "Video no encontrado. Verifica el job_id"
+}
+```
+</ResponseExample>
+
+<Warning>
+La URL de descarga tiene una fecha de expiración. Descarga el video antes de que expire el enlace.
+</Warning>
+
+---
+
+## Flujo Completo de Trabajo
+
+<Steps>
+  <Step title="Crear el video">
+    Sube tu archivo JSON de configuración y proporciona un email para recibir notificaciones.
+    
+    ```bash
+    curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+    -F "api_key=sk_test_1234567890abcdefghijklmnopqrstuvwxyz" \
+    -F "service_id=badec03b-494e-4219-a028-86fe4324b495" \
+    -F "endpoint_id=f90e729e-97cb-4b43-9b33-676956665589" \
+    -F "email=usuario@ejemplo.com" \
+    -F "json_file=@configuracion-video.json"
+    ```
+    
+    <Check>
+    Guarda el `job_id` retornado en la respuesta para los siguientes pasos.
+    </Check>
+  </Step>
+
+  <Step title="Consultar el estado">
+    Verifica periódicamente el estado del video usando el `job_id`.
+    
+    ```bash
+    curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+      "service_id": "badec03b-494e-4219-a028-86fe4324b495",
+      "endpoint_id": "c5ae540f-c7ef-455a-bb30-c0207a0ce2af",
+      "payload": {
+        "job_id": "vid_abc123def456"
+      }
+    }'
+    ```
+    
+    <Tip>
+    Implementa un intervalo de consulta de 30-60 segundos para evitar saturar el servicio.
+    </Tip>
+  </Step>
+
+  <Step title="Descargar el video">
+    Una vez que el estado sea `completed`, obtén la URL de descarga.
+    
+    ```bash
+    curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+      "service_id": "badec03b-494e-4219-a028-86fe4324b495",
+      "endpoint_id": "2ac3d285-c2dd-4a19-a4c8-17617f90196b",
+      "payload": {
+        "job_id": "vid_abc123def456"
+      }
+    }'
+    ```
+    
+    <Check>
+    Descarga el video usando la URL proporcionada antes de que expire.
+    </Check>
+  </Step>
+</Steps>
+
+---

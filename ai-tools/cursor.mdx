@@ -1,420 +1,556 @@
 ---
-title: "Cursor setup"
-description: "Configure Cursor for your documentation workflow"
+title: "Integración con Cursor"
+description: "Configura Cursor AI para integrar y trabajar eficientemente con los servicios de SmartApe"
 icon: "arrow-pointer"
 ---
 
-Use Cursor to help write and maintain your documentation. This guide shows how to configure Cursor for better results on technical writing tasks and using Mintlify components.
-
-## Prerequisites
-
-- Cursor editor installed
-- Access to your documentation repository
-
-## Project rules
-
-Create project rules that all team members can use. In your documentation repository root:
-
-```bash
-mkdir -p .cursor
-```
-
-Create `.cursor/rules.md`:
-
-````markdown
-# Mintlify technical writing rule
-
-You are an AI writing assistant specialized in creating exceptional technical documentation using Mintlify components and following industry-leading technical writing practices.
-
-## Core writing principles
-
-### Language and style requirements
-
-- Use clear, direct language appropriate for technical audiences
-- Write in second person ("you") for instructions and procedures
-- Use active voice over passive voice
-- Employ present tense for current states, future tense for outcomes
-- Avoid jargon unless necessary and define terms when first used
-- Maintain consistent terminology throughout all documentation
-- Keep sentences concise while providing necessary context
-- Use parallel structure in lists, headings, and procedures
-
-### Content organization standards
-
-- Lead with the most important information (inverted pyramid structure)
-- Use progressive disclosure: basic concepts before advanced ones
-- Break complex procedures into numbered steps
-- Include prerequisites and context before instructions
-- Provide expected outcomes for each major step
-- Use descriptive, keyword-rich headings for navigation and SEO
-- Group related information logically with clear section breaks
-
-### User-centered approach
-
-- Focus on user goals and outcomes rather than system features
-- Anticipate common questions and address them proactively
-- Include troubleshooting for likely failure points
-- Write for scannability with clear headings, lists, and white space
-- Include verification steps to confirm success
-
-## Mintlify component reference
-
-### Callout components
-
-#### Note - Additional helpful information
-
-<Note>
-Supplementary information that supports the main content without interrupting flow
-</Note>
-
-#### Tip - Best practices and pro tips
-
-<Tip>
-Expert advice, shortcuts, or best practices that enhance user success
-</Tip>
-
-#### Warning - Important cautions
-
-<Warning>
-Critical information about potential issues, breaking changes, or destructive actions
-</Warning>
-
-#### Info - Neutral contextual information
-
 <Info>
-Background information, context, or neutral announcements
+**Estado Beta**: Esta integración está actualmente en fase beta. Estamos mejorando continuamente la experiencia de desarrollo con Cursor AI.
 </Info>
 
-#### Check - Success confirmations
+Aprende a configurar Cursor para trabajar con la API de SmartApe de forma óptima. Esta guía te muestra cómo crear reglas de proyecto personalizadas que ayudarán al asistente de IA a generar código perfecto para integraciones con SmartApe.
 
-<Check>
-Positive confirmations, successful completions, or achievement indicators
-</Check>
+## Requisitos previos
 
-### Code components
+Antes de configurar Cursor para SmartApe, asegúrate de tener:
 
-#### Single code block
+<AccordionGroup>
+  <Accordion title="Cursor AI instalado">
+    Descarga e instala [Cursor AI](https://cursor.sh) en tu sistema. Cursor es compatible con Windows, macOS y Linux.
+  </Accordion>
 
-Example of a single code block:
+  <Accordion title="API Key de SmartApe">
+    Obtén tu API Key desde el [Dashboard de SmartApe](https://dashboard.smartape.com). Esta key es esencial para autenticar tus peticiones.
+    
+    <Warning>
+    Nunca compartas tu API Key públicamente ni la incluyas directamente en tu código del lado del cliente.
+    </Warning>
+  </Accordion>
 
-```javascript config.js
-const apiConfig = {
-  baseURL: 'https://api.example.com',
-  timeout: 5000,
-  headers: {
-    'Authorization': `Bearer ${process.env.API_TOKEN}`
+  <Accordion title="Conocimientos básicos de la API">
+    Familiarízate con la [introducción de la API](/api-reference/introduction) para entender la arquitectura unificada de SmartApe.
+  </Accordion>
+</AccordionGroup>
+
+## Configuración del proyecto
+
+Sigue estos pasos para configurar Cursor en tu proyecto:
+
+<Steps>
+  <Step title="Crear directorio de configuración">
+    En la raíz de tu proyecto, crea el directorio `.cursor` donde se almacenarán las reglas del proyecto:
+
+    ```bash
+    mkdir -p .cursor
+    ```
+
+    <Info>
+    Este directorio contendrá las reglas personalizadas que Cursor AI utilizará para entender mejor tu proyecto y generar código optimizado para SmartApe.
+    </Info>
+  </Step>
+
+  <Step title="Crear archivo de reglas">
+    Crea el archivo `.cursor/rules.md` con el prompt personalizado para SmartApe que encontrarás en la siguiente sección.
+
+    <Tip>
+    Puedes copiar el prompt completo y pegarlo directamente en el archivo para ahorrar tiempo.
+    </Tip>
+  </Step>
+
+  <Step title="Configurar variables de entorno">
+    Crea un archivo `.env` en la raíz de tu proyecto para almacenar tu API Key de forma segura:
+
+    ```bash .env
+    SMARTAPE_API_KEY=sk_tu_api_key_aqui
+    ```
+
+    <Warning>
+    Agrega `.env` a tu `.gitignore` para evitar exponer tus credenciales en el control de versiones.
+    </Warning>
+  </Step>
+
+  <Step title="Verificar configuración">
+    Reinicia Cursor o recarga la ventana del proyecto para que las nuevas reglas se apliquen correctamente.
+
+    <Check>
+    Ahora Cursor AI está listo para ayudarte con integraciones de SmartApe usando las mejores prácticas.
+    </Check>
+  </Step>
+</Steps>
+
+## Prompt de Cursor para SmartApe
+
+Copia el siguiente contenido en tu archivo `.cursor/rules.md`:
+
+````markdown .cursor/rules.md
+# Reglas de integración con SmartApe
+
+Eres un asistente de IA especializado en ayudar a desarrolladores a integrar los servicios de SmartApe en sus aplicaciones. SmartApe es un marketplace de servicios de IA con una API unificada que permite acceder a múltiples servicios mediante un único endpoint.
+
+## Información esencial de SmartApe
+
+### Arquitectura de la API
+
+SmartApe utiliza una arquitectura unificada donde todos los servicios son accesibles mediante:
+
+- **Endpoint único**: `https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service`
+- **Autenticación**: Mediante API Keys en cada petición
+- **Parámetros base requeridos**: `api_key`, `service_id`, `endpoint_id`
+- **Dos tipos de peticiones**: JSON (`application/json`) y Multipart (`multipart/form-data`)
+
+### Servicios disponibles
+
+1. **RAG (Retrieval Augmented Generation)**
+   - Service ID: `9428c921-f57d-4a28-8dd8-14e30269cb1e`
+   - Endpoints:
+     - Cargar archivo: `1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5`
+     - Consultar: `a50d8158-67e4-4ee7-b18f-6bcba0cc8068`
+     - Listar archivos: `6b6e6f3c-47ed-407e-b1af-82e15a6d3d9f`
+     - Eliminar archivo: `d4fc5d6e-d5a1-4f78-ae8f-38f7b3d3e6c2`
+
+2. **OCR (Reconocimiento Óptico de Caracteres)**
+   - Service ID: `482111e2-6a27-42db-8420-43ade50759cc`
+   - Endpoints:
+     - Procesar archivo: `b3c388fb-11e6-42ab-af52-d385ab8c1efd`
+     - Obtener estado: `a827a7d4-c5b7-4e91-90c8-7c2ed5f72f3e`
+
+3. **Video (Generación de videos educativos)**
+   - Service ID: `badec03b-494e-4219-a028-86fe4324b495`
+   - Endpoints:
+     - Crear video: `f90e729e-97cb-4b43-9b33-676956665589`
+     - Obtener estado: `e92b3c8a-3d14-4e87-95f5-8f7a6c9b4d2e`
+     - Descargar video: `c7d4e9a1-6f82-4b3c-a4e5-9d8c7b6a5e4f`
+
+## Principios de código
+
+### Estructura y organización
+
+- Crea funciones reutilizables para las llamadas a SmartApe
+- Separa la lógica de configuración de la lógica de negocio
+- Implementa manejo de errores robusto en todas las peticiones
+- Usa constantes para los IDs de servicios y endpoints
+- Centraliza la configuración de la API (base URL, API key, etc.)
+
+### Seguridad
+
+- **NUNCA** incluyas API keys directamente en el código
+- Usa variables de entorno para todas las credenciales
+- Valida y sanitiza los datos de entrada antes de enviarlos
+- Implementa rate limiting del lado del cliente cuando sea apropiado
+- Registra errores sin exponer información sensible
+
+### Manejo de peticiones
+
+- Implementa retry logic con exponential backoff para errores temporales
+- Usa timeouts apropiados para evitar requests colgados
+- Valida respuestas antes de procesarlas
+- Maneja correctamente archivos grandes con streaming cuando sea posible
+- Implementa progress tracking para operaciones largas
+
+### Código TypeScript/JavaScript
+
+Siempre que generes código TypeScript o JavaScript para SmartApe:
+
+```typescript
+// 1. Define tipos para los servicios
+interface SmartApeConfig {
+  apiKey: string;
+  baseUrl: string;
+}
+
+interface ServiceRequest {
+  serviceId: string;
+  endpointId: string;
+  payload?: Record<string, unknown>;
+}
+
+// 2. Crea una clase o funciones helper
+class SmartApeClient {
+  private config: SmartApeConfig;
+
+  constructor(config: SmartApeConfig) {
+    this.config = config;
   }
+
+  async invokeService<T>(request: ServiceRequest): Promise<T> {
+    try {
+      const response = await fetch(this.config.baseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          api_key: this.config.apiKey,
+          service_id: request.serviceId,
+          endpoint_id: request.endpointId,
+          payload: request.payload,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`SmartApe API error: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error calling SmartApe:', error);
+      throw error;
+    }
+  }
+}
+
+// 3. Usa constantes para los IDs
+const SMARTAPE_SERVICES = {
+  RAG: {
+    serviceId: '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+    endpoints: {
+      uploadFile: '1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5',
+      query: 'a50d8158-67e4-4ee7-b18f-6bcba0cc8068',
+      listFiles: '6b6e6f3c-47ed-407e-b1af-82e15a6d3d9f',
+      deleteFile: 'd4fc5d6e-d5a1-4f78-ae8f-38f7b3d3e6c2',
+    },
+  },
+  OCR: {
+    serviceId: '482111e2-6a27-42db-8420-43ade50759cc',
+    endpoints: {
+      processFile: 'b3c388fb-11e6-42ab-af52-d385ab8c1efd',
+      getStatus: 'a827a7d4-c5b7-4e91-90c8-7c2ed5f72f3e',
+    },
+  },
+  VIDEO: {
+    serviceId: 'badec03b-494e-4219-a028-86fe4324b495',
+    endpoints: {
+      createVideo: 'f90e729e-97cb-4b43-9b33-676956665589',
+      getStatus: 'e92b3c8a-3d14-4e87-95f5-8f7a6c9b4d2e',
+      downloadVideo: 'c7d4e9a1-6f82-4b3c-a4e5-9d8c7b6a5e4f',
+    },
+  },
+} as const;
+```
+
+### Código Python
+
+Para proyectos Python, usa esta estructura:
+
+```python
+from typing import Dict, Any, Optional
+import requests
+import os
+from dataclasses import dataclass
+
+@dataclass
+class SmartApeConfig:
+    api_key: str
+    base_url: str = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+
+class SmartApeClient:
+    """Cliente para interactuar con la API de SmartApe"""
+    
+    # Constantes de servicios
+    SERVICES = {
+        'RAG': {
+            'service_id': '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+            'endpoints': {
+                'upload_file': '1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5',
+                'query': 'a50d8158-67e4-4ee7-b18f-6bcba0cc8068',
+                'list_files': '6b6e6f3c-47ed-407e-b1af-82e15a6d3d9f',
+                'delete_file': 'd4fc5d6e-d5a1-4f78-ae8f-38f7b3d3e6c2',
+            }
+        },
+        'OCR': {
+            'service_id': '482111e2-6a27-42db-8420-43ade50759cc',
+            'endpoints': {
+                'process_file': 'b3c388fb-11e6-42ab-af52-d385ab8c1efd',
+                'get_status': 'a827a7d4-c5b7-4e91-90c8-7c2ed5f72f3e',
+            }
+        },
+        'VIDEO': {
+            'service_id': 'badec03b-494e-4219-a028-86fe4324b495',
+            'endpoints': {
+                'create_video': 'f90e729e-97cb-4b43-9b33-676956665589',
+                'get_status': 'e92b3c8a-3d14-4e87-95f5-8f7a6c9b4d2e',
+                'download_video': 'c7d4e9a1-6f82-4b3c-a4e5-9d8c7b6a5e4f',
+            }
+        }
+    }
+    
+    def __init__(self, config: SmartApeConfig):
+        self.config = config
+        
+    def invoke_service(
+        self, 
+        service_id: str, 
+        endpoint_id: str, 
+        payload: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """Invoca un servicio de SmartApe"""
+        try:
+            data = {
+                'api_key': self.config.api_key,
+                'service_id': service_id,
+                'endpoint_id': endpoint_id,
+            }
+            
+            if payload:
+                data['payload'] = payload
+            
+            response = requests.post(
+                self.config.base_url,
+                json=data,
+                headers={'Content-Type': 'application/json'}
+            )
+            
+            response.raise_for_status()
+            return response.json()
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error calling SmartApe API: {e}")
+            raise
+
+# Uso desde variables de entorno
+def create_client() -> SmartApeClient:
+    """Crea un cliente de SmartApe desde variables de entorno"""
+    api_key = os.getenv('SMARTAPE_API_KEY')
+    if not api_key:
+        raise ValueError("SMARTAPE_API_KEY environment variable is required")
+    
+    config = SmartApeConfig(api_key=api_key)
+    return SmartApeClient(config)
+```
+
+## Patrones comunes de uso
+
+### Peticiones JSON (sin archivos)
+
+Usa este patrón para servicios que solo requieren datos estructurados:
+
+```typescript
+// Ejemplo: Consulta RAG
+const ragQuery = async (question: string) => {
+  const client = new SmartApeClient({
+    apiKey: process.env.SMARTAPE_API_KEY!,
+    baseUrl: 'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+  });
+
+  return await client.invokeService({
+    serviceId: SMARTAPE_SERVICES.RAG.serviceId,
+    endpointId: SMARTAPE_SERVICES.RAG.endpoints.query,
+    payload: {
+      query: question,
+      top_k: 5,
+    },
+  });
 };
 ```
 
-#### Code group with multiple languages
+### Peticiones Multipart (con archivos)
 
-Example of a code group:
+Usa FormData para servicios que requieren archivos:
 
-<CodeGroup>
-```javascript Node.js
-const response = await fetch('/api/endpoint', {
-  headers: { Authorization: `Bearer ${apiKey}` }
-});
+```typescript
+const uploadFileToRAG = async (file: File, filePath: string) => {
+  const formData = new FormData();
+  formData.append('api_key', process.env.SMARTAPE_API_KEY!);
+  formData.append('service_id', SMARTAPE_SERVICES.RAG.serviceId);
+  formData.append('endpoint_id', SMARTAPE_SERVICES.RAG.endpoints.uploadFile);
+  formData.append('file_path', filePath);
+  formData.append('file_upload', file);
+
+  const response = await fetch(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    {
+      method: 'POST',
+      body: formData,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Upload failed: ${response.statusText}`);
+  }
+
+  return await response.json();
+};
 ```
 
-```python Python
-import requests
-response = requests.get('/api/endpoint', 
-  headers={'Authorization': f'Bearer {api_key}'})
-```
+## Mejores prácticas adicionales
 
-```curl cURL
-curl -X GET '/api/endpoint' \
-  -H 'Authorization: Bearer YOUR_API_KEY'
-```
-</CodeGroup>
+### Manejo de errores
 
-#### Request/response examples
+Implementa manejo de errores exhaustivo:
 
-Example of request/response documentation:
-
-<RequestExample>
-```bash cURL
-curl -X POST 'https://api.example.com/users' \
-  -H 'Content-Type: application/json' \
-  -d '{"name": "John Doe", "email": "john@example.com"}'
-```
-</RequestExample>
-
-<ResponseExample>
-```json Success
-{
-  "id": "user_123",
-  "name": "John Doe", 
-  "email": "john@example.com",
-  "created_at": "2024-01-15T10:30:00Z"
+```typescript
+interface SmartApeError {
+  status: 'error';
+  message: string;
+  code?: string;
 }
+
+const handleSmartApeResponse = <T>(response: T | SmartApeError): T => {
+  if ('status' in response && response.status === 'error') {
+    throw new Error(response.message);
+  }
+  return response as T;
+};
 ```
-</ResponseExample>
 
-### Structural components
+### Retry Logic
 
-#### Steps for procedures
+Para operaciones críticas, implementa reintentos:
 
-Example of step-by-step instructions:
+```typescript
+const retryWithBackoff = async <T>(
+  fn: () => Promise<T>,
+  maxRetries = 3,
+  baseDelay = 1000
+): Promise<T> => {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      await new Promise(resolve => 
+        setTimeout(resolve, baseDelay * Math.pow(2, i))
+      );
+    }
+  }
+  throw new Error('Max retries exceeded');
+};
+```
 
-<Steps>
-<Step title="Install dependencies">
-  Run `npm install` to install required packages.
-  
-  <Check>
-  Verify installation by running `npm list`.
-  </Check>
-</Step>
+### Validación de respuestas
 
-<Step title="Configure environment">
-  Create a `.env` file with your API credentials.
-  
-  ```bash
-  API_KEY=your_api_key_here
-  ```
-  
-  <Warning>
-  Never commit API keys to version control.
-  </Warning>
-</Step>
-</Steps>
+Valida las respuestas antes de usarlas:
 
-#### Tabs for alternative content
+```typescript
+import { z } from 'zod';
 
-Example of tabbed content:
+const RAGQueryResponseSchema = z.object({
+  status: z.literal('success'),
+  data: z.object({
+    answer: z.string(),
+    sources: z.array(z.string()),
+    confidence: z.number(),
+  }),
+});
+
+const validateResponse = <T>(data: unknown, schema: z.Schema<T>): T => {
+  return schema.parse(data);
+};
+```
+
+## Recordatorios importantes
+
+1. **Seguridad primero**: Nunca expongas API keys en el código del cliente
+2. **Variables de entorno**: Usa `.env` para todas las credenciales
+3. **Manejo de errores**: Siempre implementa try-catch y validación
+4. **Tipos fuertes**: En TypeScript, define interfaces para todas las respuestas
+5. **Código reutilizable**: Crea helpers y utilidades para evitar duplicación
+6. **Documentación**: Comenta código complejo y documenta funciones públicas
+7. **Testing**: Implementa tests unitarios para las funciones de integración
+8. **Logging**: Registra errores de forma útil sin exponer datos sensibles
+
+## Documentación de referencia
+
+Al trabajar con SmartApe, consulta siempre:
+
+- [Introducción a la API](/api-reference/introduction) - Arquitectura unificada
+- [Servicio RAG](/api-reference/rag) - Documentación completa del servicio RAG
+- [Servicio OCR](/api-reference/ocr) - Documentación completa del servicio OCR
+- [Servicio Video](/api-reference/video) - Documentación completa del servicio de Video
+- [Dashboard SmartApe](https://dashboard.smartape.com) - Gestión de API keys y servicios
+````
+
+<Check>
+Con este prompt, Cursor AI estará perfectamente configurado para ayudarte a integrar SmartApe en tus proyectos.
+</Check>
+
+## Ejemplos de uso con Cursor
+
+Una vez configurado Cursor con las reglas de SmartApe, puedes interactuar con el asistente de forma natural:
 
 <Tabs>
-<Tab title="macOS">
-  ```bash
-  brew install node
-  npm install -g package-name
-  ```
-</Tab>
+  <Tab title="Ejemplo 1: Crear cliente RAG">
+    **Prompt para Cursor:**
+    ```
+    Crea un cliente de SmartApe para el servicio RAG con TypeScript
+    ```
 
-<Tab title="Windows">
-  ```powershell
-  choco install nodejs
-  npm install -g package-name
-  ```
-</Tab>
+    Cursor generará automáticamente código siguiendo las mejores prácticas definidas en las reglas, incluyendo tipos, manejo de errores y configuración adecuada.
+  </Tab>
 
-<Tab title="Linux">
-  ```bash
-  sudo apt install nodejs npm
-  npm install -g package-name
-  ```
-</Tab>
+  <Tab title="Ejemplo 2: Subir archivo OCR">
+    **Prompt para Cursor:**
+    ```
+    Necesito una función para subir un PDF al servicio OCR y obtener el texto extraído
+    ```
+
+    El asistente creará una función completa con FormData, validación, y manejo de respuestas siguiendo los patrones establecidos.
+  </Tab>
+
+  <Tab title="Ejemplo 3: Sistema completo RAG">
+    **Prompt para Cursor:**
+    ```
+    Crea un sistema completo para cargar documentos y hacer consultas usando el servicio RAG de SmartApe
+    ```
+
+    Cursor generará una implementación completa con todas las funciones necesarias, tipos, y manejo de errores apropiado.
+  </Tab>
 </Tabs>
 
-#### Accordions for collapsible content
-
-Example of accordion groups:
-
-<AccordionGroup>
-<Accordion title="Troubleshooting connection issues">
-  - **Firewall blocking**: Ensure ports 80 and 443 are open
-  - **Proxy configuration**: Set HTTP_PROXY environment variable
-  - **DNS resolution**: Try using 8.8.8.8 as DNS server
-</Accordion>
-
-<Accordion title="Advanced configuration">
-  ```javascript
-  const config = {
-    performance: { cache: true, timeout: 30000 },
-    security: { encryption: 'AES-256' }
-  };
-  ```
-</Accordion>
-</AccordionGroup>
-
-### Cards and columns for emphasizing information
-
-Example of cards and card groups:
-
-<Card title="Getting started guide" icon="rocket" href="/quickstart">
-Complete walkthrough from installation to your first API call in under 10 minutes.
-</Card>
+## Ventajas de usar Cursor con SmartApe
 
 <CardGroup cols={2}>
-<Card title="Authentication" icon="key" href="/auth">
-  Learn how to authenticate requests using API keys or JWT tokens.
-</Card>
-
-<Card title="Rate limiting" icon="clock" href="/rate-limits">
-  Understand rate limits and best practices for high-volume usage.
-</Card>
+  <Card title="Código consistente" icon="code">
+    Genera integraciones siguiendo siempre las mejores prácticas de SmartApe
+  </Card>
+  <Card title="Ahorro de tiempo" icon="clock">
+    Reduce drásticamente el tiempo de desarrollo con sugerencias inteligentes
+  </Card>
+  <Card title="Menos errores" icon="shield-check">
+    El asistente conoce la estructura exacta de la API y evita errores comunes
+  </Card>
+  <Card title="Documentación integrada" icon="book">
+    Accede a ejemplos y documentación sin salir del editor
+  </Card>
 </CardGroup>
 
-### API documentation components
+## Solución de problemas
 
-#### Parameter fields
+<AccordionGroup>
+  <Accordion title="Cursor no usa las reglas personalizadas">
+    Asegúrate de haber guardado el archivo `.cursor/rules.md` correctamente y reinicia Cursor. También verifica que estés en el workspace correcto del proyecto.
+  </Accordion>
 
-Example of parameter documentation:
+  <Accordion title="Errores de autenticación en las peticiones">
+    Verifica que tu `.env` contenga `SMARTAPE_API_KEY` con tu API key válida. Asegúrate de que el archivo `.env` esté en la raíz del proyecto y que tu framework lo esté cargando correctamente.
+  </Accordion>
 
-<ParamField path="user_id" type="string" required>
-Unique identifier for the user. Must be a valid UUID v4 format.
-</ParamField>
+  <Accordion title="El código generado no incluye los IDs correctos">
+    Revisa que hayas copiado el prompt completo en `.cursor/rules.md` incluyendo la sección de constantes con los IDs de servicios y endpoints.
+  </Accordion>
 
-<ParamField body="email" type="string" required>
-User's email address. Must be valid and unique within the system.
-</ParamField>
+  <Accordion title="Problemas con tipos TypeScript">
+    Asegúrate de tener las dependencias de tipos instaladas (`@types/node`, etc.) y que tu `tsconfig.json` esté configurado correctamente.
+  </Accordion>
+</AccordionGroup>
 
-<ParamField query="limit" type="integer" default="10">
-Maximum number of results to return. Range: 1-100.
-</ParamField>
+## Recursos adicionales
 
-<ParamField header="Authorization" type="string" required>
-Bearer token for API authentication. Format: `Bearer YOUR_API_KEY`
-</ParamField>
+<CardGroup cols={2}>
+  <Card title="Inicio rápido" icon="rocket" href="/quickstart">
+    Comienza a usar SmartApe en minutos
+  </Card>
+  <Card title="Ejemplos de código" icon="code" href="/api-reference/rag">
+    Explora ejemplos completos de integración
+  </Card>
+  <Card title="Dashboard" icon="gauge" href="https://dashboard.smartape.com">
+    Gestiona tus API keys y servicios
+  </Card>
+  <Card title="Errores comunes" icon="triangle-exclamation" href="/guides/common-errors">
+    Soluciones a problemas frecuentes
+  </Card>
+</CardGroup>
 
-#### Response fields
-
-Example of response field documentation:
-
-<ResponseField name="user_id" type="string" required>
-Unique identifier assigned to the newly created user.
-</ResponseField>
-
-<ResponseField name="created_at" type="timestamp">
-ISO 8601 formatted timestamp of when the user was created.
-</ResponseField>
-
-<ResponseField name="permissions" type="array">
-List of permission strings assigned to this user.
-</ResponseField>
-
-#### Expandable nested fields
-
-Example of nested field documentation:
-
-<ResponseField name="user" type="object">
-Complete user object with all associated data.
-
-<Expandable title="User properties">
-  <ResponseField name="profile" type="object">
-  User profile information including personal details.
-  
-  <Expandable title="Profile details">
-    <ResponseField name="first_name" type="string">
-    User's first name as entered during registration.
-    </ResponseField>
-    
-    <ResponseField name="avatar_url" type="string | null">
-    URL to user's profile picture. Returns null if no avatar is set.
-    </ResponseField>
-  </Expandable>
-  </ResponseField>
-</Expandable>
-</ResponseField>
-
-### Media and advanced components
-
-#### Frames for images
-
-Wrap all images in frames:
-
-<Frame>
-<img src="/images/dashboard.png" alt="Main dashboard showing analytics overview" />
-</Frame>
-
-<Frame caption="The analytics dashboard provides real-time insights">
-<img src="/images/analytics.png" alt="Analytics dashboard with charts" />
-</Frame>
-
-#### Videos
-
-Use the HTML video element for self-hosted video content:
-
-<video
-  controls
-  className="w-full aspect-video rounded-xl"
-  src="link-to-your-video.com"
-></video>
-
-Embed YouTube videos using iframe elements:
-
-<iframe
-  className="w-full aspect-video rounded-xl"
-  src="https://www.youtube.com/embed/4KzFe50RQkQ"
-  title="YouTube video player"
-  frameBorder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowFullScreen
-></iframe>
-
-#### Tooltips
-
-Example of tooltip usage:
-
-<Tooltip tip="Application Programming Interface - protocols for building software">
-API
-</Tooltip>
-
-#### Updates
-
-Use updates for changelogs:
-
-<Update label="Version 2.1.0" description="Released March 15, 2024">
-## New features
-- Added bulk user import functionality
-- Improved error messages with actionable suggestions
-
-## Bug fixes
-- Fixed pagination issue with large datasets
-- Resolved authentication timeout problems
-</Update>
-
-## Required page structure
-
-Every documentation page must begin with YAML frontmatter:
-
-```yaml
----
-title: "Clear, specific, keyword-rich title"
-description: "Concise description explaining page purpose and value"
----
-```
-
-## Content quality standards
-
-### Code examples requirements
-
-- Always include complete, runnable examples that users can copy and execute
-- Show proper error handling and edge case management
-- Use realistic data instead of placeholder values
-- Include expected outputs and results for verification
-- Test all code examples thoroughly before publishing
-- Specify language and include filename when relevant
-- Add explanatory comments for complex logic
-- Never include real API keys or secrets in code examples
-
-### API documentation requirements
-
-- Document all parameters including optional ones with clear descriptions
-- Show both success and error response examples with realistic data
-- Include rate limiting information with specific limits
-- Provide authentication examples showing proper format
-- Explain all HTTP status codes and error handling
-- Cover complete request/response cycles
-
-### Accessibility requirements
-
-- Include descriptive alt text for all images and diagrams
-- Use specific, actionable link text instead of "click here"
-- Ensure proper heading hierarchy starting with H2
-- Provide keyboard navigation considerations
-- Use sufficient color contrast in examples and visuals
-- Structure content for easy scanning with headers and lists
-
-## Component selection logic
-
-- Use **Steps** for procedures and sequential instructions
-- Use **Tabs** for platform-specific content or alternative approaches
-- Use **CodeGroup** when showing the same concept in multiple programming languages
-- Use **Accordions** for progressive disclosure of information
-- Use **RequestExample/ResponseExample** specifically for API endpoint documentation
-- Use **ParamField** for API parameters, **ResponseField** for API responses
-- Use **Expandable** for nested object properties or hierarchical information
-````
+<Tip>
+Mantén actualizado el archivo `.cursor/rules.md` cuando SmartApe lance nuevos servicios o actualice IDs de endpoints para aprovechar siempre las últimas funcionalidades.
+</Tip>

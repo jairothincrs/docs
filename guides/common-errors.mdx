@@ -1,0 +1,415 @@
+---
+title: "Errores Comunes y Cómo Solucionarlos"
+description: "Guía completa para identificar y resolver los errores más frecuentes al utilizar la API de SmartApe"
+---
+
+Los servicios de SmartApe están diseñados para ser robustos y confiables, pero pueden surgir errores durante la integración o el uso. Esta guía te ayudará a identificar las causas más comunes y sus soluciones.
+
+---
+
+## Errores de Autenticación e Identificadores
+
+### API Key Inválida o Faltante
+
+<Warning>
+**Error:** `"API key is required"` o `"Invalid API key"`
+
+Este error ocurre cuando la API key no se incluye en la solicitud o no es válida.
+</Warning>
+
+**Causas comunes:**
+- No se incluye el parámetro `api_key` en la solicitud
+- La API key tiene un formato incorrecto
+- La API key ha sido revocada o ha expirado
+- Se está usando una API key de prueba en producción
+
+**Soluciones:**
+
+<Steps>
+  <Step title="Verificar que incluyes la API key">
+    Asegúrate de incluir el parámetro `api_key` en todas las solicitudes:
+    
+    ```bash
+    curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+      "service_id": "...",
+      "endpoint_id": "..."
+    }'
+    ```
+  </Step>
+
+  <Step title="Confirmar el formato correcto">
+    Las API keys de SmartApe comienzan con `sk_test_` (prueba) o `sk_live_` (producción).
+    
+    <Check>
+    Verifica que tu API key siga este formato y tenga al menos 40 caracteres.
+    </Check>
+  </Step>
+
+  <Step title="Generar una nueva API key">
+    Si tu API key no funciona, genera una nueva desde el dashboard de SmartApe.
+    
+    <Tip>
+    Guarda tus API keys en variables de entorno, nunca las incluyas directamente en el código fuente.
+    </Tip>
+  </Step>
+</Steps>
+
+---
+
+### Service ID o Endpoint ID Incorrecto
+
+<Warning>
+**Error:** `"Service not found"` o `"Endpoint not found"`
+
+Este error indica que el `service_id` o `endpoint_id` proporcionado no existe o no es válido.
+</Warning>
+
+**Causas comunes:**
+- Se copió incorrectamente el ID del servicio o endpoint
+- Se está usando un ID de un entorno diferente (prueba vs producción)
+- El servicio o endpoint ha sido eliminado
+
+**Soluciones:**
+
+<AccordionGroup>
+  <Accordion title="Verificar los IDs en la documentación">
+    Consulta la documentación específica del servicio que estás utilizando. Los IDs correctos son:
+    
+    **Servicio RAG:** `9428c921-f57d-4a28-8dd8-14e30269cb1e`
+    - Cargar archivo: `1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5`
+    - Consultar estado: `0dfa49e2-3d2a-42cd-9445-8cf54dad9e11`
+    - Consultar RAG: `d62a2014-0002-498c-9804-e44f12d75daf`
+    - Borrar archivo: `cc14a7d9-a28b-47f8-9d1e-c2f497dd362e`
+    
+    **Servicio OCR:** `482111e2-6a27-42db-8420-43ade50759cc`
+    - Procesar archivo: `b3c388fb-11e6-42ab-af52-d385ab8c1efd`
+    - Consultar estado: `a50d8158-67e4-4ee7-b18f-6bcba0cc8068`
+  </Accordion>
+
+  <Accordion title="Copiar IDs correctamente">
+    Asegúrate de copiar los IDs completos sin espacios adicionales:
+    
+    ```javascript
+    // ✅ Correcto
+    const serviceId = '9428c921-f57d-4a28-8dd8-14e30269cb1e';
+    
+    // ❌ Incorrecto - espacios adicionales
+    const serviceId = ' 9428c921-f57d-4a28-8dd8-14e30269cb1e ';
+    
+    // ❌ Incorrecto - ID incompleto
+    const serviceId = '9428c921-f57d-4a28';
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Errores de Payload y Parámetros
+
+### Parámetros Requeridos Faltantes
+
+<Warning>
+**Error:** `"file_path es requerido"` o `"message es requerido"`
+
+Este error ocurre cuando faltan parámetros obligatorios en el payload de la solicitud.
+</Warning>
+
+**Causas comunes:**
+- No se incluyen todos los campos requeridos en el payload
+- Los parámetros se envían con nombres incorrectos
+- Los parámetros están vacíos o nulos
+
+**Soluciones:**
+
+<Tabs>
+  <Tab title="Servicio RAG">
+    Verifica que incluyas todos los parámetros requeridos según el endpoint:
+    
+    ```javascript
+    // Cargar archivo
+    const uploadPayload = {
+      api_key: 'sk_test_...',
+      service_id: '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+      endpoint_id: '1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5',
+      payload: {
+        file_path: '/documentos/archivo.pdf' // ✅ Requerido
+      }
+      // file_upload o file_url también es requerido
+    };
+    
+    // Consultar RAG
+    const queryPayload = {
+      api_key: 'sk_test_...',
+      service_id: '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+      endpoint_id: 'd62a2014-0002-498c-9804-e44f12d75daf',
+      payload: {
+        file_path: '/documentos/archivo.pdf', // ✅ Requerido
+        message: '¿Cuál es el contenido principal?' // ✅ Requerido
+      }
+    };
+    ```
+  </Tab>
+
+  <Tab title="Servicio OCR">
+    El servicio OCR requiere diferentes parámetros según el método:
+    
+    ```javascript
+    const ocrPayload = {
+      api_key: 'sk_test_...',
+      service_id: '482111e2-6a27-42db-8420-43ade50759cc',
+      endpoint_id: 'b3c388fb-11e6-42ab-af52-d385ab8c1efd',
+      payload: {
+        file_url: 'https://ejemplo.com/doc.pdf', // ✅ Requerido (o file_upload)
+        type: 'text_extraction', // ✅ Requerido
+        file_type: 'pdf' // ✅ Requerido
+      }
+    };
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+Revisa la documentación específica de cada endpoint para conocer exactamente qué parámetros son obligatorios y cuáles son opcionales.
+</Note>
+
+---
+
+### Archivo o Recurso No Encontrado
+
+<Note>
+**Error:** `"El archivo especificado no existe"` o `"File not found"`
+
+Este error ocurre al intentar consultar o eliminar un archivo que no existe en el sistema.
+</Note>
+
+**Causas comunes:**
+- El archivo nunca fue cargado exitosamente
+- El `file_path` es incorrecto o tiene errores tipográficos
+- El archivo ya fue eliminado previamente
+
+**Soluciones:**
+
+<AccordionGroup>
+  <Accordion title="Verificar que el archivo se cargó correctamente">
+    Antes de consultar un archivo RAG, asegúrate de que el procesamiento haya completado:
+    
+    ```javascript
+    // 1. Cargar archivo y guardar task_id
+    const uploadResponse = await uploadFile();
+    const taskId = uploadResponse.data.task_id;
+    
+    // 2. Verificar estado hasta que esté completado
+    let status = 'pending';
+    while (status !== 'completed') {
+      const statusResponse = await checkTaskStatus(taskId);
+      status = statusResponse.data.status;
+      
+      if (status === 'failed') {
+        console.error('El archivo no se procesó correctamente');
+        break;
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 5000)); // Esperar 5s
+    }
+    
+    // 3. Ahora puedes consultar el archivo
+    if (status === 'completed') {
+      const queryResponse = await queryRAG(filePath, message);
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Validar el file_path">
+    El `file_path` debe ser exactamente el mismo que usaste al cargar el archivo:
+    
+    ```javascript
+    // ✅ Correcto - mismo file_path usado en carga y consulta
+    // Al cargar:
+    const uploadPath = '/documentos/manual-usuario.pdf';
+    
+    // Al consultar:
+    const queryPath = '/documentos/manual-usuario.pdf';
+    
+    // ❌ Incorrecto - paths diferentes
+    // Al cargar:
+    const uploadPath = '/documentos/manual-usuario.pdf';
+    
+    // Al consultar:
+    const queryPath = '/documentos/Manual-Usuario.pdf'; // Mayúsculas diferentes
+    ```
+    
+    <Tip>
+    Guarda el `file_path` en una variable o base de datos para usarlo consistentemente.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Errores de Red y Timeouts
+
+### Timeout de Solicitud
+
+<Warning>
+**Error:** `"Request timeout"` o `"ETIMEDOUT"`
+
+Este error ocurre cuando una solicitud tarda demasiado tiempo en completarse y excede el límite de timeout.
+</Warning>
+
+**Causas comunes:**
+- El archivo es demasiado grande para procesarse en tiempo real
+- Problemas de conectividad de red
+- El servidor está experimentando alta carga
+
+---
+
+### Error de Conexión a la Red
+
+<Warning>
+**Error:** `"Network error"`, `"ECONNREFUSED"` o `"Failed to fetch"`
+
+Este error indica problemas de conectividad entre tu aplicación y la API de SmartApe.
+</Warning>
+
+**Causas comunes:**
+- No hay conexión a Internet
+- Firewall o proxy bloqueando la solicitud
+- URL del endpoint incorrecta
+- Problemas de DNS
+
+---
+
+### Error 503 - Servicio No Disponible
+
+<Note>
+**Error:** `"503 Service Unavailable"` o `"Service temporarily unavailable"`
+
+Este error indica que el servicio está temporalmente no disponible, usualmente por mantenimiento o alta carga.
+</Note>
+
+**Causas comunes:**
+- Mantenimiento programado de la plataforma
+- Alta carga en los servidores
+- Problemas temporales de infraestructura
+
+---
+
+## Errores de Procesamiento
+
+### Error al Procesar el Documento
+
+<Warning>
+**Error:** `"Error al procesar el documento"` con estado `failed` en la tarea
+
+Este error ocurre cuando el sistema no puede procesar exitosamente el archivo cargado.
+</Warning>
+
+**Causas comunes:**
+- El archivo está corrupto o protegido con contraseña
+- El contenido del archivo es ilegible o está en un formato incompatible
+- El archivo excede el tamaño máximo permitido
+- El archivo está vacío o no contiene texto procesable
+
+**Soluciones:**
+
+<AccordionGroup>
+  <Accordion title="Validar el archivo antes de enviarlo">
+    Implementa validaciones del lado del cliente:
+    
+    ```javascript
+    const validateFile = (file) => {
+      const maxSize = 50 * 1024 * 1024; // 50MB
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+      
+      // Verificar tamaño
+      if (file.size > maxSize) {
+        throw new Error('El archivo excede el tamaño máximo de 50MB');
+      }
+      
+      // Verificar tipo
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error(`Tipo de archivo no soportado: ${file.type}`);
+      }
+      
+      // Verificar que no esté vacío
+      if (file.size === 0) {
+        throw new Error('El archivo está vacío');
+      }
+      
+      return true;
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="Verificar protección del archivo">
+    Los archivos protegidos con contraseña no pueden procesarse:
+    
+    <Steps>
+      <Step title="Remover protección">
+        Si el PDF está protegido, remueve la contraseña antes de subirlo.
+      </Step>
+      
+      <Step title="Convertir a formato compatible">
+        Si el archivo tiene restricciones, conviértelo a un formato sin protección.
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="Dividir archivos grandes">
+    Para archivos muy grandes, considera dividirlos en partes más pequeñas:
+    
+    ```javascript
+    const processLargeDocument = async (largePdfPath) => {
+      // Opción 1: Dividir en partes
+      const parts = await splitPdfIntoChunks(largePdfPath, 10); // 10MB por parte
+      
+      const results = [];
+      for (const part of parts) {
+        const result = await uploadAndProcess(part);
+        results.push(result);
+      }
+      
+      return results;
+    };
+    ```
+    
+    <Tip>
+    El tamaño máximo recomendado por archivo es de 50MB para mejor rendimiento.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Obtener Ayuda Adicional
+
+Si después de seguir esta guía aún experimentas problemas, puedes obtener ayuda de las siguientes maneras:
+
+<Steps>
+  <Step title="Revisar la documentación completa">
+    Consulta la documentación detallada de cada servicio para entender los requisitos específicos.
+    
+    - [Servicio de RAG](/api-reference/rag)
+    - [Servicio de OCR](/api-reference/ocr)
+    - [Servicio de Video](/api-reference/video)
+  </Step>
+
+  <Step title="Contactar soporte técnico">
+    Nuestro equipo de soporte está disponible para ayudarte:
+    
+    - Email: soporte@smartape.com
+    - Dashboard: [Portal de soporte](https://dashboard.smartape.com/support)
+    
+    <Note>
+    Al contactar soporte, incluye el `task_id` o detalles del error para una resolución más rápida.
+    </Note>
+  </Step>
+
+  <Step title="Consultar ejemplos de código">
+    Revisa los ejemplos completos en la documentación para ver implementaciones funcionales.
+  </Step>
+</Steps>
+

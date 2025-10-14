@@ -1,6 +1,386 @@
 ---
-title: "OCR"
-description: "Descripcion OCR ejemplos"
+title: "Servicio de OCR"
+description: "Procesa documentos mediante OCR y consulta el estado de procesamiento utilizando el servicio de OCR de SmartApe"
 ---
 
-Aqui ejemplos de peticiones a OCR
+## Procesar Archivo
+
+Procesa un documento utilizando OCR (Reconocimiento Óptico de Caracteres). Puedes proporcionar el archivo mediante una URL o subiéndolo directamente.
+
+<ParamField body="endpoint_id" type="string" required>
+  ID del endpoint: `b3c388fb-11e6-42ab-af52-d385ab8c1efd`
+</ParamField>
+
+<ParamField body="file_url" type="string" required="conditional">
+  URL del archivo a procesar. Requerido si no se envía `file_upload`
+</ParamField>
+
+<ParamField body="file_upload" type="file" required="conditional">
+  Archivo binario a procesar. Requerido si no se envía `file_url`
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Tipo de procesamiento OCR a realizar
+</ParamField>
+
+<ParamField body="file_type" type="string" required>
+  Tipo de archivo a procesar (ej: pdf, jpg, png)
+</ParamField>
+
+### Opción 1: Procesar con URL
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-H "Content-Type: application/json" \
+-d '{
+  "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+  "service_id": "482111e2-6a27-42db-8420-43ade50759cc",
+  "endpoint_id": "b3c388fb-11e6-42ab-af52-d385ab8c1efd",
+  "payload": {
+    "file_url": "https://ejemplo.com/documento.pdf",
+    "type": "text_extraction",
+    "file_type": "pdf"
+  }
+}'
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const processOcrByUrl = async () => {
+  const response = await axios.post(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    {
+      api_key: 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+      service_id: '482111e2-6a27-42db-8420-43ade50759cc',
+      endpoint_id: 'b3c388fb-11e6-42ab-af52-d385ab8c1efd',
+      payload: {
+        file_url: 'https://ejemplo.com/documento.pdf',
+        type: 'text_extraction',
+        file_type: 'pdf'
+      }
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  return response.data;
+};
+```
+
+```python Python
+import requests
+import json
+
+def process_ocr_by_url():
+    url = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+    
+    payload = {
+        'api_key': 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+        'service_id': '482111e2-6a27-42db-8420-43ade50759cc',
+        'endpoint_id': 'b3c388fb-11e6-42ab-af52-d385ab8c1efd',
+        'payload': {
+            'file_url': 'https://ejemplo.com/documento.pdf',
+            'type': 'text_extraction',
+            'file_type': 'pdf'
+        }
+    }
+    
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(payload), headers=headers)
+    return response.json()
+```
+</RequestExample>
+
+### Opción 2: Procesar con Archivo Local
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-F "api_key=sk_test_1234567890abcdefghijklmnopqrstuvwxyz" \
+-F "service_id=482111e2-6a27-42db-8420-43ade50759cc" \
+-F "endpoint_id=b3c388fb-11e6-42ab-af52-d385ab8c1efd" \
+-F "type=text_extraction" \
+-F "file_type=pdf" \
+-F "file_upload=@documento.pdf"
+```
+
+```javascript Node.js
+const FormData = require('form-data');
+const fs = require('fs');
+const axios = require('axios');
+
+const processOcrByUpload = async () => {
+  const form = new FormData();
+  form.append('api_key', 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz');
+  form.append('service_id', '482111e2-6a27-42db-8420-43ade50759cc');
+  form.append('endpoint_id', 'b3c388fb-11e6-42ab-af52-d385ab8c1efd');
+  form.append('type', 'text_extraction');
+  form.append('file_type', 'pdf');
+  form.append('file_upload', fs.createReadStream('documento.pdf'));
+
+  const response = await axios.post(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    form,
+    { headers: form.getHeaders() }
+  );
+
+  return response.data;
+};
+```
+
+```python Python
+import requests
+
+def process_ocr_by_upload():
+    url = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+    
+    data = {
+        'api_key': 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+        'service_id': '482111e2-6a27-42db-8420-43ade50759cc',
+        'endpoint_id': 'b3c388fb-11e6-42ab-af52-d385ab8c1efd',
+        'type': 'text_extraction',
+        'file_type': 'pdf'
+    }
+    
+    files = {
+        'file_upload': open('documento.pdf', 'rb')
+    }
+    
+    response = requests.post(url, data=data, files=files)
+    return response.json()
+```
+</RequestExample>
+
+<ResponseExample>
+```json Success
+{
+  "status": "success",
+  "data": {
+    "task_id": "ocr_xyz789abc123",
+    "message": "Documento en proceso de análisis OCR",
+    "file_type": "pdf",
+    "created_at": "2025-10-14T10:30:00Z"
+  }
+}
+```
+
+```json Error
+{
+  "status": "error",
+  "message": "Debe proporcionar file_url o file_upload"
+}
+```
+</ResponseExample>
+
+<Tip>
+Guarda el `task_id` retornado para consultar el estado del procesamiento y obtener los resultados cuando estén listos.
+</Tip>
+
+---
+
+## Consultar Estado del Procesamiento
+
+Consulta el estado del procesamiento OCR de un documento utilizando su `task_id`.
+
+<ParamField body="endpoint_id" type="string" required>
+  ID del endpoint: `a50d8158-67e4-4ee7-b18f-6bcba0cc8068`
+</ParamField>
+
+<ParamField body="task_id" type="string" required>
+  ID de la tarea de OCR retornado al procesar el documento
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-H "Content-Type: application/json" \
+-d '{
+  "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+  "service_id": "482111e2-6a27-42db-8420-43ade50759cc",
+  "endpoint_id": "a50d8158-67e4-4ee7-b18f-6bcba0cc8068",
+  "payload": {
+    "task_id": "ocr_xyz789abc123"
+  }
+}'
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const checkOcrStatus = async (taskId) => {
+  const response = await axios.post(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    {
+      api_key: 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+      service_id: '482111e2-6a27-42db-8420-43ade50759cc',
+      endpoint_id: 'a50d8158-67e4-4ee7-b18f-6bcba0cc8068',
+      payload: {
+        task_id: taskId
+      }
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  return response.data;
+};
+```
+
+```python Python
+import requests
+import json
+
+def check_ocr_status(task_id):
+    url = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+    
+    payload = {
+        'api_key': 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+        'service_id': '482111e2-6a27-42db-8420-43ade50759cc',
+        'endpoint_id': 'a50d8158-67e4-4ee7-b18f-6bcba0cc8068',
+        'payload': {
+            'task_id': task_id
+        }
+    }
+    
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(payload), headers=headers)
+    return response.json()
+```
+</RequestExample>
+
+<ResponseExample>
+```json Processing
+{
+  "status": "success",
+  "data": {
+    "task_id": "ocr_xyz789abc123",
+    "status": "processing",
+    "progress": 65,
+    "message": "Procesando documento con OCR"
+  }
+}
+```
+
+```json Completed
+{
+  "status": "success",
+  "data": {
+    "task_id": "ocr_xyz789abc123",
+    "status": "completed",
+    "progress": 100,
+    "message": "Procesamiento OCR completado exitosamente",
+    "result": {
+      "text": "Contenido extraído del documento...",
+      "pages": 5,
+      "confidence": 0.98,
+      "language": "es"
+    },
+    "completed_at": "2025-10-14T10:35:00Z"
+  }
+}
+```
+
+```json Failed
+{
+  "status": "success",
+  "data": {
+    "task_id": "ocr_xyz789abc123",
+    "status": "failed",
+    "message": "Error al procesar el documento",
+    "error": "Formato de archivo no soportado"
+  }
+}
+```
+</ResponseExample>
+
+<Info>
+Los estados posibles son: `pending`, `processing`, `completed` y `failed`. Consulta periódicamente hasta que el estado sea `completed`.
+</Info>
+
+---
+
+## Flujo Completo de Trabajo
+
+<Steps>
+  <Step title="Procesar el documento">
+    Envía tu documento mediante URL o archivo local para iniciar el procesamiento OCR. Puedes hacerlo de dos maneras:
+    
+    <Tabs>
+      <Tab title="Con archivo local (multipart/form-data)">
+        Usa este formato cuando subas un archivo directamente desde tu sistema.
+        
+        ```bash
+        curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+        -F "api_key=sk_test_1234567890abcdefghijklmnopqrstuvwxyz" \
+        -F "service_id=482111e2-6a27-42db-8420-43ade50759cc" \
+        -F "endpoint_id=b3c388fb-11e6-42ab-af52-d385ab8c1efd" \
+        -F "type=text_extraction" \
+        -F "file_type=pdf" \
+        -F "file_upload=@documento.pdf"
+        ```
+      </Tab>
+
+      <Tab title="Con URL (application/json)">
+        Usa este formato cuando proporciones una URL del documento a procesar.
+        
+        ```bash
+        curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+          "service_id": "482111e2-6a27-42db-8420-43ade50759cc",
+          "endpoint_id": "b3c388fb-11e6-42ab-af52-d385ab8c1efd",
+          "payload": {
+            "file_url": "https://ejemplo.com/documento.pdf",
+            "type": "text_extraction",
+            "file_type": "pdf"
+          }
+        }'
+        ```
+      </Tab>
+    </Tabs>
+    
+    <Check>
+    Guarda el `task_id` retornado en la respuesta para consultar el estado.
+    </Check>
+  </Step>
+
+  <Step title="Consultar el estado">
+    Verifica periódicamente el estado del procesamiento OCR usando el `task_id`.
+    
+    ```bash
+    curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+      "service_id": "482111e2-6a27-42db-8420-43ade50759cc",
+      "endpoint_id": "a50d8158-67e4-4ee7-b18f-6bcba0cc8068",
+      "payload": {
+        "task_id": "ocr_xyz789abc123"
+      }
+    }'
+    ```
+    
+    <Tip>
+    Implementa un intervalo de consulta de 10-30 segundos dependiendo del tamaño del documento.
+    </Tip>
+  </Step>
+
+  <Step title="Obtener los resultados">
+    Una vez que el estado sea `completed`, los resultados del OCR estarán disponibles en la respuesta.
+    
+    <Check>
+    El campo `result` contendrá el texto extraído y metadatos adicionales como confianza y número de páginas.
+    </Check>
+  </Step>
+</Steps>
+
+---

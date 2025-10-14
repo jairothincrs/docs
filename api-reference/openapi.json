@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1"
     }
   ],
   "security": [
@@ -44,7 +44,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/Success"
                 }
               }
             }
@@ -147,17 +147,32 @@
       },
       "Error": {
         "required": [
-          "error",
+          "status",
           "message"
         ],
         "type": "object",
         "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+          "status": {
+            "type": "string"
           },
           "message": {
             "type": "string"
+          }
+        }
+      },
+      "Success": {
+        "required": [
+          "status",
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
           }
         }
       }

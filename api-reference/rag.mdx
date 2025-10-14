@@ -1,6 +1,579 @@
 ---
-title: "RAG"
-description: "Descripcion RAG ejemplos"
+title: "Servicio de RAG"
+description: "Carga documentos, consulta información contextual y gestiona archivos utilizando el servicio de RAG de SmartApe"
 ---
 
-Aqui ejemplos de peticiones a RAG
+## Cargar Archivo
+
+Carga un archivo para su procesamiento e indexación en el sistema RAG. Puedes subir un archivo directamente, proporcionar una URL o especificar una ruta.
+
+<ParamField body="endpoint_id" type="string" required>
+  ID del endpoint: `1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5`
+</ParamField>
+
+<ParamField body="file_upload" type="file">
+  Archivo a cargar directamente (PDF, DOCX, TXT, etc.)
+</ParamField>
+
+<ParamField body="file_url" type="string">
+  URL del archivo a cargar de forma remota
+</ParamField>
+
+<ParamField body="file_path" type="string" required>
+  Ruta donde se almacenará el archivo en el sistema
+</ParamField>
+
+<RequestExample>
+```bash cURL - Con archivo local
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-F "api_key=sk_test_1234567890abcdefghijklmnopqrstuvwxyz" \
+-F "service_id=9428c921-f57d-4a28-8dd8-14e30269cb1e" \
+-F "endpoint_id=1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5" \
+-F "file_path=/documentos/manual-usuario.pdf" \
+-F "file_upload=@manual-usuario.pdf"
+```
+
+```bash cURL - Con URL
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-F "api_key=sk_test_1234567890abcdefghijklmnopqrstuvwxyz" \
+-F "service_id=9428c921-f57d-4a28-8dd8-14e30269cb1e" \
+-F "endpoint_id=1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5" \
+-F "file_path=/documentos/manual-usuario.pdf" \
+-F "file_url=https://ejemplo.com/documentos/manual.pdf"
+```
+
+```javascript Node.js
+const FormData = require('form-data');
+const fs = require('fs');
+const axios = require('axios');
+
+const uploadFile = async () => {
+  const form = new FormData();
+  form.append('api_key', 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz');
+  form.append('service_id', '9428c921-f57d-4a28-8dd8-14e30269cb1e');
+  form.append('endpoint_id', '1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5');
+  form.append('file_path', '/documentos/manual-usuario.pdf');
+  form.append('file_upload', fs.createReadStream('manual-usuario.pdf'));
+
+  const response = await axios.post(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    form,
+    { headers: form.getHeaders() }
+  );
+
+  return response.data;
+};
+```
+
+```python Python
+import requests
+
+def upload_file():
+    url = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+    
+    data = {
+        'api_key': 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+        'service_id': '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+        'endpoint_id': '1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5',
+        'file_path': '/documentos/manual-usuario.pdf'
+    }
+    
+    files = {
+        'file_upload': open('manual-usuario.pdf', 'rb')
+    }
+    
+    response = requests.post(url, data=data, files=files)
+    return response.json()
+```
+</RequestExample>
+
+<ResponseExample>
+```json Success
+{
+  "status": "success",
+  "data": {
+    "task_id": "rag_task_abc123",
+    "file_path": "/documentos/manual-usuario.pdf",
+    "message": "Archivo cargado exitosamente, procesamiento iniciado",
+    "created_at": "2025-10-14T10:30:00Z"
+  }
+}
+```
+
+```json Error
+{
+  "status": "error",
+  "message": "file_path es requerido"
+}
+```
+</ResponseExample>
+
+<Tip>
+Guarda el `task_id` retornado para consultar el estado del procesamiento del archivo.
+</Tip>
+
+---
+
+## Consultar Estado de Tarea
+
+Verifica el estado de procesamiento de un archivo cargado utilizando su `task_id`.
+
+<ParamField body="endpoint_id" type="string" required>
+  ID del endpoint: `0dfa49e2-3d2a-42cd-9445-8cf54dad9e11`
+</ParamField>
+
+<ParamField body="task_id" type="string" required>
+  ID de la tarea retornado al cargar el archivo
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-H "Content-Type: application/json" \
+-d '{
+  "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+  "service_id": "9428c921-f57d-4a28-8dd8-14e30269cb1e",
+  "endpoint_id": "0dfa49e2-3d2a-42cd-9445-8cf54dad9e11",
+  "payload": {
+    "task_id": "rag_task_abc123"
+  }
+}'
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const checkTaskStatus = async (taskId) => {
+  const response = await axios.post(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    {
+      api_key: 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+      service_id: '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+      endpoint_id: '0dfa49e2-3d2a-42cd-9445-8cf54dad9e11',
+      payload: {
+        task_id: taskId
+      }
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  return response.data;
+};
+```
+
+```python Python
+import requests
+import json
+
+def check_task_status(task_id):
+    url = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+    
+    payload = {
+        'api_key': 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+        'service_id': '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+        'endpoint_id': '0dfa49e2-3d2a-42cd-9445-8cf54dad9e11',
+        'payload': {
+            'task_id': task_id
+        }
+    }
+    
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(payload), headers=headers)
+    return response.json()
+```
+</RequestExample>
+
+<ResponseExample>
+```json Processing
+{
+  "status": "success",
+  "data": {
+    "task_id": "rag_task_abc123",
+    "status": "processing",
+    "progress": 60,
+    "message": "Indexando documento",
+    "file_path": "/documentos/manual-usuario.pdf"
+  }
+}
+```
+
+```json Completed
+{
+  "status": "success",
+  "data": {
+    "task_id": "rag_task_abc123",
+    "status": "completed",
+    "progress": 100,
+    "message": "Documento procesado e indexado correctamente",
+    "file_path": "/documentos/manual-usuario.pdf",
+    "completed_at": "2025-10-14T10:35:00Z",
+    "chunks_created": 47
+  }
+}
+```
+
+```json Failed
+{
+  "status": "success",
+  "data": {
+    "task_id": "rag_task_abc123",
+    "status": "failed",
+    "message": "Error al procesar el documento",
+    "error": "Formato de archivo no soportado"
+  }
+}
+```
+</ResponseExample>
+
+<Info>
+Los estados posibles son: `pending`, `processing`, `completed` y `failed`. Una vez que el estado sea `completed`, podrás consultar el archivo usando el servicio RAG.
+</Info>
+
+---
+
+## Consultar RAG
+
+Realiza consultas contextuales sobre los archivos cargados. El sistema utilizará el contenido de los documentos para proporcionar respuestas precisas.
+
+<ParamField body="endpoint_id" type="string" required>
+  ID del endpoint: `d62a2014-0002-498c-9804-e44f12d75daf`
+</ParamField>
+
+<ParamField body="file_path" type="string" required>
+  Ruta del archivo que deseas consultar
+</ParamField>
+
+<ParamField body="message" type="string" required>
+  Pregunta o consulta que deseas realizar sobre el documento
+</ParamField>
+
+<ParamField body="session_id" type="string">
+  ID de sesión para mantener el contexto de conversaciones anteriores
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-H "Content-Type: application/json" \
+-d '{
+  "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+  "service_id": "9428c921-f57d-4a28-8dd8-14e30269cb1e",
+  "endpoint_id": "d62a2014-0002-498c-9804-e44f12d75daf",
+  "payload": {
+    "file_path": "/documentos/manual-usuario.pdf",
+    "message": "¿Cuáles son los pasos para configurar la aplicación?",
+    "session_id": "session_xyz789"
+  }
+}'
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const queryRAG = async (filePath, message, sessionId = null) => {
+  const payload = {
+    file_path: filePath,
+    message: message
+  };
+  
+  if (sessionId) {
+    payload.session_id = sessionId;
+  }
+
+  const response = await axios.post(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    {
+      api_key: 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+      service_id: '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+      endpoint_id: 'd62a2014-0002-498c-9804-e44f12d75daf',
+      payload: payload
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  return response.data;
+};
+```
+
+```python Python
+import requests
+import json
+
+def query_rag(file_path, message, session_id=None):
+    url = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+    
+    payload_data = {
+        'file_path': file_path,
+        'message': message
+    }
+    
+    if session_id:
+        payload_data['session_id'] = session_id
+    
+    payload = {
+        'api_key': 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+        'service_id': '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+        'endpoint_id': 'd62a2014-0002-498c-9804-e44f12d75daf',
+        'payload': payload_data
+    }
+    
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(payload), headers=headers)
+    return response.json()
+```
+</RequestExample>
+
+<ResponseExample>
+```json Success
+{
+  "status": "success",
+  "data": {
+    "answer": "Para configurar la aplicación, debes seguir estos pasos:\n\n1. Descarga e instala la aplicación desde la tienda oficial\n2. Abre la aplicación y selecciona 'Nueva configuración'\n3. Ingresa tus credenciales de usuario\n4. Personaliza las preferencias según tus necesidades\n5. Haz clic en 'Guardar configuración'\n\nEsta información se encuentra en la sección 2.3 del manual de usuario.",
+    "session_id": "session_xyz789",
+    "sources": [
+      {
+        "page": 12,
+        "relevance": 0.95,
+        "content": "Sección 2.3 - Configuración inicial..."
+      }
+    ],
+    "confidence": 0.92
+  }
+}
+```
+
+```json Error - File Not Found
+{
+  "status": "error",
+  "message": "El archivo especificado no existe o no ha sido procesado"
+}
+```
+
+```json Error - Invalid Query
+{
+  "status": "error",
+  "message": "El parámetro 'message' es requerido"
+}
+```
+</ResponseExample>
+
+<Tip>
+Utiliza el mismo `session_id` en consultas consecutivas para mantener el contexto de la conversación y obtener respuestas más precisas.
+</Tip>
+
+---
+
+## Borrar Archivo
+
+Elimina un archivo del sistema RAG y su contenido indexado.
+
+<ParamField body="endpoint_id" type="string" required>
+  ID del endpoint: `cc14a7d9-a28b-47f8-9d1e-c2f497dd362e`
+</ParamField>
+
+<ParamField body="file_path" type="string" required>
+  Ruta del archivo que deseas eliminar
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+-H "Content-Type: application/json" \
+-d '{
+  "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+  "service_id": "9428c921-f57d-4a28-8dd8-14e30269cb1e",
+  "endpoint_id": "cc14a7d9-a28b-47f8-9d1e-c2f497dd362e",
+  "payload": {
+    "file_path": "/documentos/manual-usuario.pdf"
+  }
+}'
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const deleteFile = async (filePath) => {
+  const response = await axios.post(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    {
+      api_key: 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+      service_id: '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+      endpoint_id: 'cc14a7d9-a28b-47f8-9d1e-c2f497dd362e',
+      payload: {
+        file_path: filePath
+      }
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  return response.data;
+};
+```
+
+```python Python
+import requests
+import json
+
+def delete_file(file_path):
+    url = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
+    
+    payload = {
+        'api_key': 'sk_test_1234567890abcdefghijklmnopqrstuvwxyz',
+        'service_id': '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+        'endpoint_id': 'cc14a7d9-a28b-47f8-9d1e-c2f497dd362e',
+        'payload': {
+            'file_path': file_path
+        }
+    }
+    
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(payload), headers=headers)
+    return response.json()
+```
+</RequestExample>
+
+<ResponseExample>
+```json Success
+{
+  "status": "success",
+  "data": {
+    "message": "Archivo eliminado correctamente",
+    "file_path": "/documentos/manual-usuario.pdf",
+    "deleted_at": "2025-10-14T11:00:00Z"
+  }
+}
+```
+
+```json Error - Not Found
+{
+  "status": "error",
+  "message": "El archivo especificado no existe"
+}
+```
+</ResponseExample>
+
+<Warning>
+Esta acción es irreversible. Una vez eliminado el archivo, deberás cargarlo nuevamente si deseas consultarlo.
+</Warning>
+
+---
+
+## Flujo Completo de Trabajo
+
+<Steps>
+  <Step title="Cargar el archivo">
+    Sube tu documento al sistema RAG para su procesamiento e indexación. Puedes hacerlo de dos maneras:
+    
+    <Tabs>
+      <Tab title="Con archivo local (multipart/form-data)">
+        Usa este formato cuando subas un archivo directamente desde tu sistema.
+        
+        ```bash
+        curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+        -F "api_key=sk_test_1234567890abcdefghijklmnopqrstuvwxyz" \
+        -F "service_id=9428c921-f57d-4a28-8dd8-14e30269cb1e" \
+        -F "endpoint_id=1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5" \
+        -F "file_path=/documentos/manual-usuario.pdf" \
+        -F "file_upload=@manual-usuario.pdf"
+        ```
+      </Tab>
+
+      <Tab title="Con URL (application/json)">
+        Usa este formato cuando proporciones una URL del archivo a cargar.
+        
+        ```bash
+        curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+          "service_id": "9428c921-f57d-4a28-8dd8-14e30269cb1e",
+          "endpoint_id": "1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5",
+          "payload": {
+            "file_path": "/documentos/manual-usuario.pdf",
+            "file_url": "https://ejemplo.com/documentos/manual.pdf"
+          }
+        }'
+        ```
+      </Tab>
+    </Tabs>
+    
+    <Check>
+    Guarda el `task_id` retornado para verificar el estado del procesamiento.
+    </Check>
+  </Step>
+
+  <Step title="Verificar el estado de procesamiento">
+    Consulta periódicamente el estado hasta que el archivo esté completamente indexado.
+    
+    ```bash
+    curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+      "service_id": "9428c921-f57d-4a28-8dd8-14e30269cb1e",
+      "endpoint_id": "0dfa49e2-3d2a-42cd-9445-8cf54dad9e11",
+      "payload": {
+        "task_id": "rag_task_abc123"
+      }
+    }'
+    ```
+    
+    <Tip>
+    El tiempo de procesamiento depende del tamaño y complejidad del documento.
+    </Tip>
+  </Step>
+
+  <Step title="Realizar consultas">
+    Una vez que el estado sea `completed`, puedes hacer preguntas sobre el contenido del documento.
+    
+    ```bash
+    curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+      "service_id": "9428c921-f57d-4a28-8dd8-14e30269cb1e",
+      "endpoint_id": "d62a2014-0002-498c-9804-e44f12d75daf",
+      "payload": {
+        "file_path": "/documentos/manual-usuario.pdf",
+        "message": "¿Cuáles son los pasos para configurar la aplicación?",
+        "session_id": "session_xyz789"
+      }
+    }'
+    ```
+    
+    <Check>
+    Utiliza el mismo `session_id` para mantener el contexto entre múltiples consultas.
+    </Check>
+  </Step>
+
+  <Step title="Eliminar el archivo (opcional)">
+    Si ya no necesitas el archivo, puedes eliminarlo del sistema.
+    
+    ```bash
+    curl -X POST "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "api_key": "sk_test_1234567890abcdefghijklmnopqrstuvwxyz",
+      "service_id": "9428c921-f57d-4a28-8dd8-14e30269cb1e",
+      "endpoint_id": "cc14a7d9-a28b-47f8-9d1e-c2f497dd362e",
+      "payload": {
+        "file_path": "/documentos/manual-usuario.pdf"
+      }
+    }'
+    ```
+  </Step>
+</Steps>
+
+---
