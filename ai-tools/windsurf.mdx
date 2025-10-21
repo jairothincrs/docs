@@ -1,96 +1,659 @@
 ---
-title: "Windsurf setup"
-description: "Configure Windsurf for your documentation workflow"
+title: "Integración con Windsurf"
+description: "Configura Windsurf con Cascade AI para integrar y trabajar eficientemente con los servicios de SmartApe"
 icon: "water"
 ---
 
-Configure Windsurf's Cascade AI assistant to help you write and maintain documentation. This guide shows how to set up Windsurf specifically for your Mintlify documentation workflow.
+<Info>
+**Estado Beta**: Esta integración está actualmente en fase beta. Estamos mejorando continuamente la experiencia de desarrollo con Windsurf y Cascade AI.
+</Info>
 
-## Prerequisites
+Aprende a configurar Windsurf con su potente asistente Cascade AI para trabajar con la API de SmartApe de forma óptima. Esta guía te muestra cómo crear reglas de workspace personalizadas que ayudarán al asistente de IA a generar código perfecto para integraciones con SmartApe.
 
-- Windsurf editor installed
-- Access to your documentation repository
+## Requisitos previos
 
-## Workspace rules
+Antes de configurar Windsurf para SmartApe, asegúrate de tener:
 
-Create workspace rules that provide Windsurf with context about your documentation project and standards.
+<AccordionGroup>
+  <Accordion title="Windsurf instalado">
+    Descarga e instala [Windsurf](https://codeium.com/windsurf) en tu sistema. Windsurf es compatible con Windows, macOS y Linux.
+    
+    <Tip>
+    Windsurf incluye el asistente Cascade AI, que ofrece capacidades avanzadas de pair programming con IA.
+    </Tip>
+  </Accordion>
 
-Create `.windsurf/rules.md` in your project root:
+  <Accordion title="API Key de SmartApe">
+    Obtén tu API Key desde el [Dashboard de SmartApe](https://dashboard.smartape.com). Esta key es esencial para autenticar tus peticiones.
+    
+    <Warning>
+    Nunca compartas tu API Key públicamente ni la incluyas directamente en tu código del lado del cliente.
+    </Warning>
+  </Accordion>
 
-````markdown
-# Mintlify technical writing rule
+  <Accordion title="Conocimientos básicos de la API">
+    Familiarízate con la [introducción de la API](/api-reference/introduction) para entender la arquitectura unificada de SmartApe.
+  </Accordion>
+</AccordionGroup>
 
-## Project context
+## Configuración del proyecto
 
-- This is a documentation project on the Mintlify platform
-- We use MDX files with YAML frontmatter  
-- Navigation is configured in `docs.json`
-- We follow technical writing best practices
+Sigue estos pasos para configurar Windsurf en tu proyecto:
 
-## Writing standards
+<Steps>
+  <Step title="Crear directorio de configuración">
+    En la raíz de tu proyecto, crea el directorio `.windsurf` donde se almacenarán las reglas del workspace:
 
-- Use second person ("you") for instructions
-- Write in active voice and present tense
-- Start procedures with prerequisites
-- Include expected outcomes for major steps
-- Use descriptive, keyword-rich headings
-- Keep sentences concise but informative
+    ```bash
+    mkdir -p .windsurf
+    ```
 
-## Required page structure
+    <Info>
+    Este directorio contendrá las reglas personalizadas que Cascade AI utilizará para entender mejor tu proyecto y generar código optimizado para SmartApe.
+    </Info>
+  </Step>
 
-Every page must start with frontmatter:
+  <Step title="Crear archivo de reglas">
+    Crea el archivo `.windsurf/rules.md` con el prompt personalizado para SmartApe que encontrarás en la siguiente sección.
 
-```yaml
----
-title: "Clear, specific title"
-description: "Concise description for SEO and navigation"
----
+    <Tip>
+    Puedes copiar el prompt completo y pegarlo directamente en el archivo para ahorrar tiempo.
+    </Tip>
+  </Step>
+
+  <Step title="Configurar variables de entorno">
+    Crea un archivo `.env` en la raíz de tu proyecto para almacenar tu API Key de forma segura:
+
+    ```bash .env
+    SMARTAPE_API_KEY=sk_tu_api_key_aqui
+    ```
+
+    <Warning>
+    Agrega `.env` a tu `.gitignore` para evitar exponer tus credenciales en el control de versiones.
+    </Warning>
+  </Step>
+
+  <Step title="Verificar configuración">
+    Reinicia Windsurf o recarga el workspace del proyecto para que las nuevas reglas se apliquen correctamente.
+
+    <Check>
+    Ahora Cascade AI está listo para ayudarte con integraciones de SmartApe usando las mejores prácticas.
+    </Check>
+  </Step>
+</Steps>
+
+## Prompt de Windsurf para SmartApe
+
+Copia el siguiente contenido en tu archivo `.windsurf/rules.md`:
+
+````markdown .windsurf/rules.md
+# Reglas de integración con SmartApe para Cascade AI
+
+Eres Cascade AI, un asistente especializado en ayudar a desarrolladores a integrar los servicios de SmartApe en sus aplicaciones. SmartApe es un marketplace de servicios de IA con una API unificada que permite acceder a múltiples servicios mediante un único endpoint.
+
+## Información esencial de SmartApe
+
+### Arquitectura de la API
+
+SmartApe utiliza una arquitectura unificada donde todos los servicios son accesibles mediante:
+
+- **Endpoint único**: `https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service`
+- **Autenticación**: Mediante API Keys en cada petición
+- **Parámetros base requeridos**: `api_key`, `service_id`, `endpoint_id`
+- **Dos tipos de peticiones**: JSON (`application/json`) y Multipart (`multipart/form-data`)
+
+### Servicios disponibles
+
+1. **RAG (Retrieval Augmented Generation)**
+   - Service ID: `9428c921-f57d-4a28-8dd8-14e30269cb1e`
+   - Endpoints:
+     - Cargar archivo: `1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5`
+     - Consultar: `a50d8158-67e4-4ee7-b18f-6bcba0cc8068`
+     - Listar archivos: `6b6e6f3c-47ed-407e-b1af-82e15a6d3d9f`
+     - Eliminar archivo: `d4fc5d6e-d5a1-4f78-ae8f-38f7b3d3e6c2`
+
+2. **OCR (Reconocimiento Óptico de Caracteres)**
+   - Service ID: `482111e2-6a27-42db-8420-43ade50759cc`
+   - Endpoints:
+     - Procesar archivo: `b3c388fb-11e6-42ab-af52-d385ab8c1efd`
+     - Obtener estado: `a827a7d4-c5b7-4e91-90c8-7c2ed5f72f3e`
+
+3. **Video (Generación de videos educativos)**
+   - Service ID: `badec03b-494e-4219-a028-86fe4324b495`
+   - Endpoints:
+     - Crear video: `f90e729e-97cb-4b43-9b33-676956665589`
+     - Obtener estado: `e92b3c8a-3d14-4e87-95f5-8f7a6c9b4d2e`
+     - Descargar video: `c7d4e9a1-6f82-4b3c-a4e5-9d8c7b6a5e4f`
+
+## Principios de código
+
+### Estructura y organización
+
+- Crea funciones reutilizables para las llamadas a SmartApe
+- Separa la lógica de configuración de la lógica de negocio
+- Implementa manejo de errores robusto en todas las peticiones
+- Usa constantes para los IDs de servicios y endpoints
+- Centraliza la configuración de la API (base URL, API key, etc.)
+
+### Seguridad
+
+- **NUNCA** incluyas API keys directamente en el código
+- Usa variables de entorno para todas las credenciales
+- Valida y sanitiza los datos de entrada antes de enviarlos
+- Implementa rate limiting del lado del cliente cuando sea apropiado
+- Registra errores sin exponer información sensible
+
+### Manejo de peticiones
+
+- Implementa retry logic con exponential backoff para errores temporales
+- Usa timeouts apropiados para evitar requests colgados
+- Valida respuestas antes de procesarlas
+- Maneja correctamente archivos grandes con streaming cuando sea posible
+- Implementa progress tracking para operaciones largas
+
+### Código TypeScript/JavaScript
+
+Siempre que generes código TypeScript o JavaScript para SmartApe:
+
+```typescript
+// 1. Define tipos para los servicios
+interface SmartApeConfig {
+  apiKey: string;
+  baseUrl: string;
+}
+
+interface ServiceRequest {
+  serviceId: string;
+  endpointId: string;
+  payload?: Record<string, unknown>;
+}
+
+// 2. Crea una clase o funciones helper
+class SmartApeClient {
+  private config: SmartApeConfig;
+
+  constructor(config: SmartApeConfig) {
+    this.config = config;
+  }
+
+  async invokeService<T>(request: ServiceRequest): Promise<T> {
+    try {
+      const response = await fetch(this.config.baseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          api_key: this.config.apiKey,
+          service_id: request.serviceId,
+          endpoint_id: request.endpointId,
+          payload: request.payload,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`SmartApe API error: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error calling SmartApe:', error);
+      throw error;
+    }
+  }
+}
+
+// 3. Usa constantes para los IDs
+const SMARTAPE_SERVICES = {
+  RAG: {
+    serviceId: '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+    endpoints: {
+      uploadFile: '1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5',
+      query: 'a50d8158-67e4-4ee7-b18f-6bcba0cc8068',
+      listFiles: '6b6e6f3c-47ed-407e-b1af-82e15a6d3d9f',
+      deleteFile: 'd4fc5d6e-d5a1-4f78-ae8f-38f7b3d3e6c2',
+    },
+  },
+  OCR: {
+    serviceId: '482111e2-6a27-42db-8420-43ade50759cc',
+    endpoints: {
+      processFile: 'b3c388fb-11e6-42ab-af52-d385ab8c1efd',
+      getStatus: 'a827a7d4-c5b7-4e91-90c8-7c2ed5f72f3e',
+    },
+  },
+  VIDEO: {
+    serviceId: 'badec03b-494e-4219-a028-86fe4324b495',
+    endpoints: {
+      createVideo: 'f90e729e-97cb-4b43-9b33-676956665589',
+      getStatus: 'e92b3c8a-3d14-4e87-95f5-8f7a6c9b4d2e',
+      downloadVideo: 'c7d4e9a1-6f82-4b3c-a4e5-9d8c7b6a5e4f',
+    },
+  },
+} as const;
 ```
 
-## Mintlify components
+### Código Python
 
-### Callouts
+Para proyectos Python, usa esta estructura:
 
-- `<Note>` for helpful supplementary information
-- `<Warning>` for important cautions and breaking changes
-- `<Tip>` for best practices and expert advice  
-- `<Info>` for neutral contextual information
-- `<Check>` for success confirmations
+```python
+from typing import Dict, Any, Optional
+import requests
+import os
+from dataclasses import dataclass
 
-### Code examples
+@dataclass
+class SmartApeConfig:
+    api_key: str
+    base_url: str = "https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service"
 
-- When appropriate, include complete, runnable examples
-- Use `<CodeGroup>` for multiple language examples
-- Specify language tags on all code blocks
-- Include realistic data, not placeholders
-- Use `<RequestExample>` and `<ResponseExample>` for API docs
+class SmartApeClient:
+    """Cliente para interactuar con la API de SmartApe"""
+    
+    # Constantes de servicios
+    SERVICES = {
+        'RAG': {
+            'service_id': '9428c921-f57d-4a28-8dd8-14e30269cb1e',
+            'endpoints': {
+                'upload_file': '1dca4c67-8316-4c20-9e2a-2f7a6f7fddc5',
+                'query': 'a50d8158-67e4-4ee7-b18f-6bcba0cc8068',
+                'list_files': '6b6e6f3c-47ed-407e-b1af-82e15a6d3d9f',
+                'delete_file': 'd4fc5d6e-d5a1-4f78-ae8f-38f7b3d3e6c2',
+            }
+        },
+        'OCR': {
+            'service_id': '482111e2-6a27-42db-8420-43ade50759cc',
+            'endpoints': {
+                'process_file': 'b3c388fb-11e6-42ab-af52-d385ab8c1efd',
+                'get_status': 'a827a7d4-c5b7-4e91-90c8-7c2ed5f72f3e',
+            }
+        },
+        'VIDEO': {
+            'service_id': 'badec03b-494e-4219-a028-86fe4324b495',
+            'endpoints': {
+                'create_video': 'f90e729e-97cb-4b43-9b33-676956665589',
+                'get_status': 'e92b3c8a-3d14-4e87-95f5-8f7a6c9b4d2e',
+                'download_video': 'c7d4e9a1-6f82-4b3c-a4e5-9d8c7b6a5e4f',
+            }
+        }
+    }
+    
+    def __init__(self, config: SmartApeConfig):
+        self.config = config
+        
+    def invoke_service(
+        self, 
+        service_id: str, 
+        endpoint_id: str, 
+        payload: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """Invoca un servicio de SmartApe"""
+        try:
+            data = {
+                'api_key': self.config.api_key,
+                'service_id': service_id,
+                'endpoint_id': endpoint_id,
+            }
+            
+            if payload:
+                data['payload'] = payload
+            
+            response = requests.post(
+                self.config.base_url,
+                json=data,
+                headers={'Content-Type': 'application/json'}
+            )
+            
+            response.raise_for_status()
+            return response.json()
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error calling SmartApe API: {e}")
+            raise
 
-### Procedures
+# Uso desde variables de entorno
+def create_client() -> SmartApeClient:
+    """Crea un cliente de SmartApe desde variables de entorno"""
+    api_key = os.getenv('SMARTAPE_API_KEY')
+    if not api_key:
+        raise ValueError("SMARTAPE_API_KEY environment variable is required")
+    
+    config = SmartApeConfig(api_key=api_key)
+    return SmartApeClient(config)
+```
 
-- Use `<Steps>` component for sequential instructions
-- Include verification steps with `<Check>` components when relevant
-- Break complex procedures into smaller steps
+## Patrones comunes de uso
 
-### Content organization
+### Peticiones JSON (sin archivos)
 
-- Use `<Tabs>` for platform-specific content
-- Use `<Accordion>` for progressive disclosure
-- Use `<Card>` and `<CardGroup>` for highlighting content
-- Wrap images in `<Frame>` components with descriptive alt text
+Usa este patrón para servicios que solo requieren datos estructurados:
 
-## API documentation requirements
+```typescript
+// Ejemplo: Consulta RAG
+const ragQuery = async (question: string) => {
+  const client = new SmartApeClient({
+    apiKey: process.env.SMARTAPE_API_KEY!,
+    baseUrl: 'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+  });
 
-- Document all parameters with `<ParamField>` 
-- Show response structure with `<ResponseField>`
-- Include both success and error examples
-- Use `<Expandable>` for nested object properties
-- Always include authentication examples
+  return await client.invokeService({
+    serviceId: SMARTAPE_SERVICES.RAG.serviceId,
+    endpointId: SMARTAPE_SERVICES.RAG.endpoints.query,
+    payload: {
+      query: question,
+      top_k: 5,
+    },
+  });
+};
+```
 
-## Quality standards
+### Peticiones Multipart (con archivos)
 
-- Test all code examples before publishing
-- Use relative paths for internal links
-- Include alt text for all images
-- Ensure proper heading hierarchy (start with h2)
-- Check existing patterns for consistency
+Usa FormData para servicios que requieren archivos:
+
+```typescript
+const uploadFileToRAG = async (file: File, filePath: string) => {
+  const formData = new FormData();
+  formData.append('api_key', process.env.SMARTAPE_API_KEY!);
+  formData.append('service_id', SMARTAPE_SERVICES.RAG.serviceId);
+  formData.append('endpoint_id', SMARTAPE_SERVICES.RAG.endpoints.uploadFile);
+  formData.append('file_path', filePath);
+  formData.append('file_upload', file);
+
+  const response = await fetch(
+    'https://dfofxhxkdkwelswhzyyp.supabase.co/functions/v1/invoke-service',
+    {
+      method: 'POST',
+      body: formData,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Upload failed: ${response.statusText}`);
+  }
+
+  return await response.json();
+};
+```
+
+## Mejores prácticas adicionales
+
+### Manejo de errores
+
+Implementa manejo de errores exhaustivo:
+
+```typescript
+interface SmartApeError {
+  status: 'error';
+  message: string;
+  code?: string;
+}
+
+const handleSmartApeResponse = <T>(response: T | SmartApeError): T => {
+  if ('status' in response && response.status === 'error') {
+    throw new Error(response.message);
+  }
+  return response as T;
+};
+```
+
+### Retry Logic
+
+Para operaciones críticas, implementa reintentos:
+
+```typescript
+const retryWithBackoff = async <T>(
+  fn: () => Promise<T>,
+  maxRetries = 3,
+  baseDelay = 1000
+): Promise<T> => {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      await new Promise(resolve => 
+        setTimeout(resolve, baseDelay * Math.pow(2, i))
+      );
+    }
+  }
+  throw new Error('Max retries exceeded');
+};
+```
+
+### Validación de respuestas
+
+Valida las respuestas antes de usarlas:
+
+```typescript
+import { z } from 'zod';
+
+const RAGQueryResponseSchema = z.object({
+  status: z.literal('success'),
+  data: z.object({
+    answer: z.string(),
+    sources: z.array(z.string()),
+    confidence: z.number(),
+  }),
+});
+
+const validateResponse = <T>(data: unknown, schema: z.Schema<T>): T => {
+  return schema.parse(data);
+};
+```
+
+## Recordatorios importantes
+
+1. **Seguridad primero**: Nunca expongas API keys en el código del cliente
+2. **Variables de entorno**: Usa `.env` para todas las credenciales
+3. **Manejo de errores**: Siempre implementa try-catch y validación
+4. **Tipos fuertes**: En TypeScript, define interfaces para todas las respuestas
+5. **Código reutilizable**: Crea helpers y utilidades para evitar duplicación
+6. **Documentación**: Comenta código complejo y documenta funciones públicas
+7. **Testing**: Implementa tests unitarios para las funciones de integración
+8. **Logging**: Registra errores de forma útil sin exponer datos sensibles
+
+## Documentación de referencia
+
+Al trabajar con SmartApe, consulta siempre:
+
+- [Introducción a la API](/api-reference/introduction) - Arquitectura unificada
+- [Servicio RAG](/api-reference/rag) - Documentación completa del servicio RAG
+- [Servicio OCR](/api-reference/ocr) - Documentación completa del servicio OCR
+- [Servicio Video](/api-reference/video) - Documentación completa del servicio de Video
+- [Dashboard SmartApe](https://dashboard.smartape.com) - Gestión de API keys y servicios
 ````
+
+<Check>
+Con este prompt, Cascade AI en Windsurf estará perfectamente configurado para ayudarte a integrar SmartApe en tus proyectos.
+</Check>
+
+## Características únicas de Windsurf
+
+Windsurf con Cascade AI ofrece capacidades avanzadas que mejoran tu experiencia de desarrollo:
+
+<CardGroup cols={2}>
+  <Card title="Cascade AI Flow" icon="sparkles">
+    El agente Cascade puede realizar múltiples ediciones complejas en varios archivos simultáneamente, manteniendo el contexto completo del proyecto.
+  </Card>
+  <Card title="Agentic Coding" icon="robot">
+    Cascade actúa como un verdadero compañero de programación que puede ejecutar comandos, buscar en la codebase y realizar cambios de manera autónoma.
+  </Card>
+  <Card title="Deep Context Understanding" icon="brain">
+    Entiende el contexto completo de tu proyecto, incluyendo arquitectura, convenciones de código y patrones establecidos.
+  </Card>
+  <Card title="Supercomplete" icon="wand-magic-sparkles">
+    Autocompletado inteligente que predice no solo la siguiente línea, sino bloques completos de código basándose en el contexto.
+  </Card>
+</CardGroup>
+
+## Comandos útiles de Cascade
+
+Windsurf permite usar comandos especiales con Cascade AI para tareas específicas:
+
+<AccordionGroup>
+  <Accordion title="@workspace - Contexto completo">
+    Usa `@workspace` en tus prompts para que Cascade considere todo el contexto de tu proyecto al generar código.
+    
+    ```
+    @workspace Crea una integración completa con SmartApe RAG
+    ```
+  </Accordion>
+
+  <Accordion title="@file - Referencia archivos">
+    Usa `@file` para hacer referencia a archivos específicos en tus prompts.
+    
+    ```
+    @file api-client.ts Actualiza este cliente para incluir el servicio Video
+    ```
+  </Accordion>
+
+  <Accordion title="@terminal - Ejecutar comandos">
+    Cascade puede ejecutar comandos de terminal cuando sea necesario.
+    
+    ```
+    @terminal Instala las dependencias necesarias para TypeScript
+    ```
+  </Accordion>
+
+  <Accordion title="@web - Buscar información">
+    Cascade puede buscar información actualizada en la web cuando sea necesario.
+    
+    ```
+    @web Busca las mejores prácticas actuales para manejo de archivos con FormData
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Ventajas de usar Windsurf con SmartApe
+
+<CardGroup cols={2}>
+  <Card title="Pair programming real" icon="users">
+    Cascade AI actúa como un verdadero compañero que entiende tu proyecto y puede hacer cambios complejos de forma autónoma
+  </Card>
+  <Card title="Código consistente" icon="code">
+    Genera integraciones siguiendo siempre las mejores prácticas de SmartApe definidas en las reglas
+  </Card>
+  <Card title="Ediciones multi-archivo" icon="files">
+    Realiza cambios coherentes en múltiples archivos simultáneamente, manteniendo la consistencia del proyecto
+  </Card>
+  <Card title="Comprensión profunda" icon="magnifying-glass">
+    Entiende la arquitectura completa de SmartApe y sugiere las mejores soluciones para cada caso
+  </Card>
+</CardGroup>
+
+## Comparación: Windsurf vs otros editores
+
+<Tabs>
+  <Tab title="Ventajas de Windsurf">
+    - **Cascade AI**: Asistente más autónomo y capaz de realizar cambios complejos
+    - **Flow Mode**: Permite ediciones simultáneas en múltiples archivos
+    - **Deep Context**: Comprensión más profunda del proyecto completo
+    - **Supercomplete**: Autocompletado más inteligente y predictivo
+    - **Comandos especiales**: `@workspace`, `@file`, `@terminal`, `@web`
+  </Tab>
+
+  <Tab title="Casos de uso ideales">
+    - Proyectos grandes con múltiples servicios de SmartApe
+    - Refactorizaciones complejas que afectan varios archivos
+    - Implementaciones de features completas de principio a fin
+    - Debugging y optimización de código existente
+    - Aprendizaje de las mejores prácticas de integración
+  </Tab>
+
+  <Tab title="Cuándo usar Windsurf">
+    Windsurf es ideal cuando:
+    - Necesitas hacer cambios complejos en múltiples archivos
+    - Quieres un asistente más autónomo que pueda ejecutar tareas completas
+    - Estás empezando con SmartApe y necesitas guía constante
+    - Trabajas en proyectos que requieren mantener consistencia en toda la codebase
+  </Tab>
+</Tabs>
+
+## Solución de problemas
+
+<AccordionGroup>
+  <Accordion title="Cascade no usa las reglas personalizadas">
+    Asegúrate de haber guardado el archivo `.windsurf/rules.md` correctamente y reinicia Windsurf. También verifica que estés en el workspace correcto del proyecto.
+    
+    <Tip>
+    Puedes forzar a Cascade a leer las reglas usando `@workspace` en tu prompt.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Errores de autenticación en las peticiones">
+    Verifica que tu `.env` contenga `SMARTAPE_API_KEY` con tu API key válida. Asegúrate de que el archivo `.env` esté en la raíz del proyecto y que tu framework lo esté cargando correctamente.
+  </Accordion>
+
+  <Accordion title="El código generado no incluye los IDs correctos">
+    Revisa que hayas copiado el prompt completo en `.windsurf/rules.md` incluyendo la sección de constantes con los IDs de servicios y endpoints.
+  </Accordion>
+
+  <Accordion title="Cascade hace cambios inesperados">
+    Si Cascade realiza cambios que no esperabas, puedes usar `Cmd/Ctrl + Z` para revertir. También puedes ser más específico en tus prompts indicando exactamente qué archivos deben modificarse.
+  </Accordion>
+
+  <Accordion title="Problemas con tipos TypeScript">
+    Asegúrate de tener las dependencias de tipos instaladas (`@types/node`, etc.) y que tu `tsconfig.json` esté configurado correctamente. Cascade puede ayudarte con esto usando el comando `@terminal`.
+  </Accordion>
+</AccordionGroup>
+
+## Tips avanzados para Cascade AI
+
+<Steps>
+  <Step title="Usa comandos específicos">
+    Combina comandos como `@workspace` y `@file` para dar contexto preciso:
+    
+    ```
+    @workspace @file src/api/client.ts 
+    Actualiza el cliente para incluir retry logic en todas las llamadas a SmartApe
+    ```
+  </Step>
+
+  <Step title="Iteración incremental">
+    En lugar de pedir todo de una vez, itera con Cascade:
+    
+    1. "Crea la estructura básica del cliente SmartApe"
+    2. "Ahora agrega manejo de errores"
+    3. "Implementa retry logic con exponential backoff"
+    4. "Agrega tests unitarios"
+  </Step>
+
+  <Step title="Aprovecha el Flow Mode">
+    Activa Flow Mode para cambios complejos que requieran editar múltiples archivos simultáneamente. Cascade mantendrá la coherencia entre todos los archivos.
+  </Step>
+
+  <Step title="Revisa antes de aceptar">
+    Cascade te mostrará un diff de todos los cambios propuestos. Revísalos cuidadosamente antes de aceptar, especialmente en archivos críticos.
+  </Step>
+</Steps>
+
+## Recursos adicionales
+
+<CardGroup cols={2}>
+  <Card title="Inicio rápido" icon="rocket" href="/quickstart">
+    Comienza a usar SmartApe en minutos
+  </Card>
+  <Card title="Ejemplos de código" icon="code" href="/api-reference/rag">
+    Explora ejemplos completos de integración
+  </Card>
+  <Card title="Dashboard" icon="gauge" href="https://dashboard.smartape.com">
+    Gestiona tus API keys y servicios
+  </Card>
+  <Card title="Errores comunes" icon="triangle-exclamation" href="/guides/common-errors">
+    Soluciones a problemas frecuentes
+  </Card>
+</CardGroup>
+
+<Tip>
+Mantén actualizado el archivo `.windsurf/rules.md` cuando SmartApe lance nuevos servicios o actualice IDs de endpoints para aprovechar siempre las últimas funcionalidades con Cascade AI.
+</Tip>
+
+## Próximos pasos
+
+Ahora que has configurado Windsurf con Cascade AI para SmartApe, te recomendamos:
+
+1. **Experimenta con Cascade**: Prueba diferentes prompts y explora las capacidades del asistente
+2. **Revisa los ejemplos**: Consulta la [documentación de la API](/api-reference/introduction) para ver casos de uso completos
+3. **Únete a la comunidad**: Comparte tus experiencias y aprende de otros desarrolladores
+4. **Mantén actualizado**: Sigue las actualizaciones de SmartApe para nuevas funcionalidades
